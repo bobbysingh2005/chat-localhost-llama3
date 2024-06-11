@@ -1,5 +1,7 @@
-import axios from "axios";
 import React, { useState } from "react";
+import axios from "axios";
+import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm';
 
 const Chat = () => {
   const [message, setMessage] = useState("");
@@ -71,12 +73,12 @@ const Chat = () => {
       <main className="container">
         <div className="row">
           <div className="col">
-            {messages.map((message, index) => (
-              <div key={index}>
-                <h2>{message.name}</h2>
-                <p>{message.text}</p>
-              </div>
-            ))}
+            {messages.map((message, index) => {
+              if(message.name!==user) {
+                return (<div key={index}><h2>{message.name}</h2><Markdown remarkPlugins={[remarkGfm]}>{message.text}</Markdown></div>)
+              };//endIf
+              return (<div key={index}><h2>{message.name}</h2><p>{message.text}</p></div>)
+})}
           </div>
         </div>
         <div className="row">
