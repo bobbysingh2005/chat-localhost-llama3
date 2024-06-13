@@ -1,9 +1,9 @@
 {
   "name": "chat-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.1",
   "description": "this simple react app to access llama3 module by ollama rest api.",
-  "main": "index.js",
+  "main": "dist/index.js",
   "keywords": [
     "llama3",
     "reactJs",
@@ -15,27 +15,28 @@
   "author": "bobby singh <bobbysingh2005@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "start": "node .",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
-    "axios": "^1.7.2",
-    "bootstrap": "^5.3.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-markdown": "^9.0.1",
-    "remark-gfm": "^4.0.0"
+    "axios": "latest",
+    "bootstrap": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-markdown": "latest",
+    "remark-gfm": "latest"
   },
   "devDependencies": {
-    "@types/react": "^18.2.64",
-    "@types/react-dom": "^18.2.21",
-    "@vitejs/plugin-react-swc": "^3.5.0",
-    "eslint": "^8.57.0",
-    "eslint-plugin-react": "^7.34.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5",
-    "vite": "^5.1.6"
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@vitejs/plugin-react-swc": "latest",
+    "eslint": "latest",
+    "eslint-plugin-react": "latest",
+    "eslint-plugin-react-hooks": "latest",
+    "eslint-plugin-react-refresh": "latest",
+    "vite": "latest"
   }
 }
