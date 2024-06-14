@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
-import Markdown from 'react-markdown'
-import remarkGfm from 'remark-gfm';
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import Loder from "./components/loader";
 
 const Chat = () => {
   const [message, setMessage] = useState("");
@@ -74,15 +75,27 @@ const Chat = () => {
         <div className="row">
           <div className="col">
             {messages.map((message, index) => {
-              if(message.name!==user) {
-                return (<div key={index}><h2>{message.name}</h2><Markdown remarkPlugins={[remarkGfm]}>{message.text}</Markdown></div>)
-              };//endIf
-              return (<div key={index}><h2>{message.name}</h2><p>{message.text}</p></div>)
-})}
+              if (message.name !== user) {
+                return (
+                  <div key={index}>
+                    <h2>{message.name}</h2>
+                    <Markdown remarkPlugins={[remarkGfm]}>
+                      {message.text}
+                    </Markdown>
+                  </div>
+                );
+              } //endIf
+              return (
+                <div key={index}>
+                  <h2>{message.name}</h2>
+                  <p>{message.text}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
         <div className="row">
-          <div className="col">{loading ? `Loading...` : ""}</div>
+          <div className="col">{loading ? <Loder /> : ""}</div>
         </div>
         <div className="row">
           <div className="col">
@@ -101,9 +114,7 @@ const Chat = () => {
       </main>
       {errors ? (
         <div className="row" role="alert">
-            <pre>
-          {errors}
-            </pre>
+          <pre>{errors}</pre>
         </div>
       ) : (
         ""
