@@ -1,18 +1,19 @@
+import dayjs from 'dayjs';
+import React from 'react';
 
-
-export default function MainFooter = (){
+function MainFooter (){
     return (
         <footer class="bg-dark py-3 mt-auto">
       <div class="container">
-        <form action="#" class="d-flex justify-content-center">
-          <input
-            type="search"
-            class="form-control me-2"
-            placeholder="Search..."
-          />
-          <button class="btn btn-primary">Search</button>
-        </form>
+        <div className='col'>
+          &copy; {dayjs().format('YYYY')}
+        </div>
+        <div className='col'>
+          Develop by bpsingh
+        </div>
       </div>
     </footer>
     )
-}
+};//end
+
+export default MainFooter;

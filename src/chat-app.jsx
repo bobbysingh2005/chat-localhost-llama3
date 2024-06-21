@@ -3,6 +3,8 @@ import axios from "axios";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Loder from "./components/loader";
+import MainHeader from './main-header';
+import MainFooter from './main-footer';
 
 const Chat = () => {
   const [message, setMessage] = useState("");
@@ -67,10 +69,7 @@ const Chat = () => {
     ); //end
   return (
     <>
-      <header>
-        <h1>Hi {user}, Chat with me!</h1>
-      </header>
-      <hr />
+        <MainHeader user={user} />
       <main className="container">
         <div className="row">
           <div className="col">
@@ -119,9 +118,7 @@ const Chat = () => {
       ) : (
         ""
       )}
-      <footer>
-        <p>Develop by Bobby singh (bpsingh)</p>
-      </footer>
+      <MainFooter />
     </>
   );
 }; //end
