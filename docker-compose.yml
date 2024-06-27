@@ -1,0 +1,46 @@
+# version: '3.4'
+
+volumes:
+  ollama:
+
+networks:
+  llama_net:
+    # driver: bridge
+    # external: true
+
+services:
+  chat-api:
+    container_name: chatApi
+    image: ollama/ollama:latest
+    #gpus: all
+    cpus: 12
+    #runtime: nvidia
+    environment:
+      - OLLAMA_ORIGINS=*
+      - OLLAMA_HOST=0.0.0.0:11434
+      - GPU=all
+      - DEVICE_DRIVER=nvidia
+    ports:
+      - 11434:11434
+    volumes:
+      # - ./.ollama:/root/.ollama:z
+      - ./.ollama:/root/.ollama
+      # - ollama:/root/.ollama:z
+      - ollama:/root/.ollama
+    networks:
+      - llama_net
+
+  chat-app:
+    container_name: chatApp
+    # image: nginx:latest
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8080:3000"
+    volumes:
+      # - ./dist:/usr/share/nginx/html
+      - ./src:/app/src
+      - ./vite.config.js:/app/vite.config.js
+    networks:
+      - llama_net

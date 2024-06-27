@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -18,10 +18,14 @@ const Chat = () => {
 
   const apiRequest = async (text) => {
     try {
-      let msg = await axios.post(`http://localhost:11434/api/generate`, {
+      // let url = "http://localhost:11434/api/generate"
+      // let url = "http://api:11434/api/generate"
+      let url = "http://localhost:11434/api/generate"
+      let msg = await axios.post(url, {
         model: "llama3",
         prompt: text,
         stream: false,
+        // stream: true,
       }); //end
       setLoading(false);
       return msg.data.response;
