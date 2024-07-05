@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useContext, useState } from 'react';
 import axios from "axios";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Loder from "./components/loader";
 import MainHeader from './main-header';
 import MainFooter from './main-footer';
+import { AppSetting } from './App-setting';
 
 const Chat = () => {
   const [message, setMessage] = useState("");
@@ -15,14 +16,14 @@ const Chat = () => {
   const [ready, setReady] = useState(localStorage.getItem("user") || false);
   const [loading, setLoading] = useState(false);
   const [errors, setError] = useState(null);
+  const {currentModel} = useContext(AppSetting)
 
   const apiRequest = async (text) => {
     try {
-      // let url = "http://localhost:11434/api/generate"
-      // let url = "http://api:11434/api/generate"
       let url = "http://localhost:11434/api/generate"
+
       let msg = await axios.post(url, {
-        model: "llama3",
+        model: currentModel,
         prompt: text,
         stream: false,
         // stream: true,
@@ -52,7 +53,7 @@ const Chat = () => {
   }; //end
   const save = (ev) => {
     ev.preventDefault();
-    let { name, value } = ev.target.name;
+    let {  value } = ev.target.name;
     if (value === "") {
       setUser("user");
       localStorage.setItem("user", "user");
@@ -73,7 +74,10 @@ const Chat = () => {
     ); //end
   return (
     <>
-        <MainHeader user={user} />
+        <MainHeader 
+        user={user} 
+        currentModelName={currentModel}
+        />
       <main className="container">
         <div className="row">
           <div className="col">

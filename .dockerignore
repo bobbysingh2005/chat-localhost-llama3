@@ -1,3 +1,9 @@
-
 /node_modules
-.ollama
+.git
+.gitignore
+/.ollama/
+/.ollama
+
+
+/bk-*
+/bk_*

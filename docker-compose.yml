@@ -1,4 +1,4 @@
-# version: '3.4'
+version: '3'
 
 volumes:
   ollama:
@@ -10,34 +10,66 @@ networks:
 
 services:
   chat-api:
+    # Define the name of the container
     container_name: chatApi
-    image: ollama/ollama:latest
-    #gpus: all
+  
+    # Use the official Ollama image and pin it to a specific version (rocm)
+    image: ollama/ollama:rocm
+  
+    # Restart the container if it exits, unless it's being manually stopped
+    restart: always  #unless-stopped
+  
+    # Set the shared memory size to 1GB
+    shm_size: 1GB
+  
+    # Limit the amount of memory used by the container to 20GB
+    mem_limit: 24GB
+  
+    # Allocate 12 CPU cores to the container
     cpus: 12
-    #runtime: nvidia
+  
+    # Define environment variables for the container
     environment:
       - OLLAMA_ORIGINS=*
       - OLLAMA_HOST=0.0.0.0:11434
-      - GPU=all
-      - DEVICE_DRIVER=nvidia
+      - GPU=all       # Set GPU mode (e.g., ryzen, nvidia)
+      # - DEVICE_DRIVER=nvidia     # Specify the device driver to use (e.g., nvidia)
+      - DEVICE_DRIVER=ryzen     # Specify the device driver to use (e.g., ryzen)
+    
+      # Set compiler flags for the container
+      - OLLAMA_CPPFLAGS=-DCUDA_ARCH_BIN=70 -DCUDA_ARCH_PTX=70 -DHLSL_TARGET=sm70
+          # Link against the rocm_device library
+      - OLLAMA_LDFLAGS=-lrocm_device
+
+      # - OLLAMA_CPPFLAGS=-DCUDA_ARCH_BIN=70 -DCUDA_ARCH_PTX=70 -DHLSL_TARGET=sm70     # Set compiler flags (Cuda architecture, PTX, and HLSL target)
+      # - OLLAMA_LDFLAGS=-lrocm_device   # Link against the rocm_device library
+
+    # Define a healthcheck for the container
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434"]     # Check if port 11434 is available
+  
+    # Expose port 11434 from the container
     ports:
       - 11434:11434
+
+    # Mount host directories as volumes inside the container
     volumes:
-      # - ./.ollama:/root/.ollama:z
-      - ./.ollama:/root/.ollama
-      # - ollama:/root/.ollama:z
-      - ollama:/root/.ollama
+      - ./.ollama:/root/.ollama       # Map local directory to /root/.ollama in the container
+      - ollama:/root/.ollama          # Map another local directory to /root/.ollama in the container
+
+    # Connect the container to a network (e.g., llama_net)
     networks:
       - llama_net
 
   chat-app:
     container_name: chatApp
+    restart: always
     # image: nginx:latest
     build: 
       context: ./
       dockerfile: Dockerfile
     ports:
-      - "8080:3000"
+      - "8080:8080"
     volumes:
       # - ./dist:/usr/share/nginx/html
       - ./src:/app/src
