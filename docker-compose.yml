@@ -1,4 +1,4 @@
-version: '3'
+# version: '3'
 
 volumes:
   ollama:
@@ -64,22 +64,16 @@ services:
   app:
     container_name: chatApp
     restart: always
-    # image: nginx:latest
     build: 
       context: ./
       dockerfile: Dockerfile
-      
+     
     healthcheck:
-      test: ["CMD", "curl", "-s", "-f", "http://localhost:8080"]
+      test: ["CMD", "curl", "-s", "-f", "http://localhost:8080/"]
       interval: 10s
       timeout: 2s
       retries: 3
-
     ports:
-      - "8080:8080"
-    volumes:
-      # - ./dist:/usr/share/nginx/html
-      - ./src:/app/src
-      - ./vite.config.js:/app/vite.config.js
+      - "8080:80"
     networks:
       - llama_net
