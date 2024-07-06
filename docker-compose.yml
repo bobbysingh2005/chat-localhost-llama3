@@ -9,7 +9,7 @@ networks:
     # external: true
 
 services:
-  chat-api:
+  api:
     # Define the name of the container
     container_name: chatApi
   
@@ -41,8 +41,8 @@ services:
           # Link against the rocm_device library
       - OLLAMA_LDFLAGS=-lrocm_device
 
-      # - OLLAMA_CPPFLAGS=-DCUDA_ARCH_BIN=70 -DCUDA_ARCH_PTX=70 -DHLSL_TARGET=sm70     # Set compiler flags (Cuda architecture, PTX, and HLSL target)
-      # - OLLAMA_LDFLAGS=-lrocm_device   # Link against the rocm_device library
+      - OLLAMA_CPPFLAGS=-DCUDA_ARCH_BIN=70 -DCUDA_ARCH_PTX=70 -DHLSL_TARGET=sm70     # Set compiler flags (Cuda architecture, PTX, and HLSL target)
+      - OLLAMA_LDFLAGS=-lrocm_device   # Link against the rocm_device library
 
     # Define a healthcheck for the container
     healthcheck:
@@ -61,13 +61,20 @@ services:
     networks:
       - llama_net
 
-  chat-app:
+  app:
     container_name: chatApp
     restart: always
     # image: nginx:latest
     build: 
       context: ./
       dockerfile: Dockerfile
+      
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-f", "http://localhost:8080"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+
     ports:
       - "8080:8080"
     volumes:
