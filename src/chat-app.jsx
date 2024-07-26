@@ -17,9 +17,11 @@ const Chat = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setError] = useState(null);
   const {currentModel} = useContext(AppSetting)
+const [responseTyme, setResponseTime] = useState(null);
 
   const apiRequest = async (text) => {
     try {
+      let reTime = new Date();
       let url = "http://localhost:11434/api/generate"
 
       let msg = await axios.post(url, {
@@ -28,6 +30,7 @@ const Chat = () => {
         stream: false,
         // stream: true,
       }); //end
+      let raTime = new Date();
       setLoading(false);
       return msg.data.response;
     } catch (err) {

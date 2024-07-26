@@ -14,7 +14,8 @@ services:
     container_name: chatApi
   
     # Use the official Ollama image and pin it to a specific version (rocm)
-    image: ollama/ollama:rocm
+    # image: ollama/ollama:rocm
+    image: ollama/ollama:latest
   
     # Restart the container if it exits, unless it's being manually stopped
     restart: always  #unless-stopped
@@ -22,10 +23,10 @@ services:
     # Set the shared memory size to 1GB
     shm_size: 1GB
   
-    # Limit the amount of memory used by the container to 20GB
-    mem_limit: 24GB
+    # Limit the amount of memory used by the container to --GB
+    mem_limit: 23GB
   
-    # Allocate 12 CPU cores to the container
+    # Allocate CPU cores to the container
     cpus: 12
   
     # Define environment variables for the container
@@ -34,15 +35,15 @@ services:
       - OLLAMA_HOST=0.0.0.0:11434
       - GPU=all       # Set GPU mode (e.g., ryzen, nvidia)
       # - DEVICE_DRIVER=nvidia     # Specify the device driver to use (e.g., nvidia)
-      # - DEVICE_DRIVER=ryzen     # Specify the device driver to use (e.g., ryzen)
+      - DEVICE_DRIVER=ryzen     # Specify the device driver to use (e.g., ryzen)
     
       # Set compiler flags for the container
-      # - OLLAMA_CPPFLAGS=-DCUDA_ARCH_BIN=70 -DCUDA_ARCH_PTX=70 -DHLSL_TARGET=sm70
+      - OLLAMA_CPPFLAGS=-DCUDA_ARCH_BIN=70 -DCUDA_ARCH_PTX=70 -DHLSL_TARGET=sm70
           # Link against the rocm_device library
-      # - OLLAMA_LDFLAGS=-lrocm_device
+      - OLLAMA_LDFLAGS=-lrocm_device
 
-      - OLLAMA_CPPFLAGS=-DCUDA_ARCH_BIN=70 -DCUDA_ARCH_PTX=70 -DHLSL_TARGET=sm70     # Set compiler flags (Cuda architecture, PTX, and HLSL target)
-      - OLLAMA_LDFLAGS=-lrocm_device   # Link against the rocm_device library
+      # - OLLAMA_CPPFLAGS=-DCUDA_ARCH_BIN=70 -DCUDA_ARCH_PTX=70 -DHLSL_TARGET=sm70     # Set compiler flags (Cuda architecture, PTX, and HLSL target)
+      # - OLLAMA_LDFLAGS=-lrocm_device   # Link against the rocm_device library
 
     # Define a healthcheck for the container
     healthcheck:
