@@ -1,80 +1,69 @@
-# version: '3'
+version: '3.8'  # Specify the version of Docker Compose file format
 
+# Define volumes for persistent data
 volumes:
-  ollama:
+  ollama:  # Named volume to persist model data
 
+# Define networks for container communication
 networks:
   llama_net:
+    # Optional: Uncomment and configure if you need an external network configuration
     # driver: bridge
     # external: true
 
 services:
+  # Service for running the LLaMA model
   api:
-    # Define the name of the container
-    container_name: chatApi
-  
-    # Use the official Ollama image and pin it to a specific version (rocm)
-    # image: ollama/ollama:rocm
-    image: ollama/ollama:latest
-  
-    # Restart the container if it exits, unless it's being manually stopped
-    restart: always  #unless-stopped
-  
-    # Set the shared memory size to 1GB
-    shm_size: 1GB
-  
-    # Limit the amount of memory used by the container to --GB
-    mem_limit: 23GB
-  
-    # Allocate CPU cores to the container
-    cpus: 12
-  
+    container_name: chatApi  # Name of the container for easy management
+    image: ollama/ollama:latest  # Use the latest version of the Ollama image
+    restart: always  # Restart the container automatically if it crashes
+    shm_size: 2gb  # Allocate 2GB of shared memory for the container
+    mem_limit: 16gb  # Limit the container's memory usage to 20GB
+    cpus: '12'  # Allocate 12 CPU cores to the container (adjust based on actual available cores)
+
     # Define environment variables for the container
     environment:
-      - OLLAMA_ORIGINS=*
-      - OLLAMA_HOST=0.0.0.0:11434
-      - GPU=all       # Set GPU mode (e.g., ryzen, nvidia)
-      # - DEVICE_DRIVER=nvidia     # Specify the device driver to use (e.g., nvidia)
-      - DEVICE_DRIVER=ryzen     # Specify the device driver to use (e.g., ryzen)
-    
-      # Set compiler flags for the container
-      - OLLAMA_CPPFLAGS=-DCUDA_ARCH_BIN=70 -DCUDA_ARCH_PTX=70 -DHLSL_TARGET=sm70
-          # Link against the rocm_device library
-      - OLLAMA_LDFLAGS=-lrocm_device
+      - OLLAMA_ORIGINS=*  # Allow requests from all origins (adjust for security as needed)
+      - OLLAMA_HOST=0.0.0.0:11434  # Bind the API to all network interfaces on port 11434
+      - GPU=all  # Use all available GPUs (ensure compatibility with your GPU setup)
+      - DEVICE_DRIVER=ryzen  # Specify device driver (for integrated AMD graphics; adjust if using a different GPU setup)
+      - OLLAMA_CPPFLAGS=-DCUDA_ARCH_BIN=70 -DCUDA_ARCH_PTX=70 -DHLSL_TARGET=sm70  # Set compiler flags (adjust based on your model requirements)
 
-      # - OLLAMA_CPPFLAGS=-DCUDA_ARCH_BIN=70 -DCUDA_ARCH_PTX=70 -DHLSL_TARGET=sm70     # Set compiler flags (Cuda architecture, PTX, and HLSL target)
-      # - OLLAMA_LDFLAGS=-lrocm_device   # Link against the rocm_device library
-
-    # Define a healthcheck for the container
+    # Define a health check to ensure the service is running correctly
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434"]     # Check if port 11434 is available
-  
-    # Expose port 11434 from the container
-    ports:
-      - 11434:11434
+      test: ["CMD", "curl", "-s", "-f", "http://localhost:11434/"]  # Check if the service is responding on port 11434
+      interval: 15s  # Check every 15 seconds
+      timeout: 5s  # Wait up to 5 seconds for a response
+      retries: 3  # Retry up to 3 times before considering the service unhealthy
 
-    # Mount host directories as volumes inside the container
+    ports:
+      - "11434:11434"  # Map port 11434 on the host to port 11434 in the container
+
+    # Mount host directories to the container for persistent storage
     volumes:
-      - ./.ollama:/root/.ollama       # Map local directory to /root/.ollama in the container
-      - ollama:/root/.ollama          # Map another local directory to /root/.ollama in the container
+      - ./.ollama:/root/.ollama  # Map local directory to container directory for persistent data
+      - ollama:/root/.ollama  # Use named volume for additional persistent storage
 
-    # Connect the container to a network (e.g., llama_net)
     networks:
-      - llama_net
+      - llama_net  # Connect the container to the custom network
 
+  # Service for the frontend application
   app:
-    container_name: chatApp
-    restart: always
-    build: 
-      context: ./
-      dockerfile: Dockerfile
-     
+    container_name: chatApp  # Name of the container for easy management
+    restart: always  # Restart the container automatically if it crashes
+    build:
+      context: ./  # Build the image using the Dockerfile in the current directory
+      dockerfile: Dockerfile  # Specify the Dockerfile to use
+
+    # Define a health check to ensure the service is running correctly
     healthcheck:
-      test: ["CMD", "curl", "-s", "-f", "http://localhost:8080/"]
-      interval: 10s
-      timeout: 2s
-      retries: 3
+      test: ["CMD", "curl", "-s", "-f", "http://localhost:8080"]  # Check if the service is responding on port 8080
+      interval: 15s  # Check every 15 seconds
+      timeout: 5s  # Wait up to 5 seconds for a response
+      retries: 3  # Retry up to 3 times before considering the service unhealthy
+
     ports:
-      - "8080:80"
+      - "8080:80"  # Map port 80 in the container to port 8080 on the host
+
     networks:
-      - llama_net
+      - llama_net  # Connect the container to the custom network

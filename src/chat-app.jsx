@@ -1,8 +1,7 @@
 import { useContext, useState } from 'react';
-import axios from "axios";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import Loder from "./components/loader";
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import Loader from './components/loader';
 import MainHeader from './main-header';
 import MainFooter from './main-footer';
 import { AppSetting } from './App-setting';
@@ -10,102 +9,173 @@ import { AppSetting } from './App-setting';
 const Chat = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const [user, setUser] = useState(
-    localStorage.getItem("user") ? localStorage.getItem("user") : ""
-  );
-  const [ready, setReady] = useState(localStorage.getItem("user") || false);
+  const [user, setUser] = useState(localStorage.getItem("user") || "");
+  const [ready, setReady] = useState(!!localStorage.getItem("user"));
   const [loading, setLoading] = useState(false);
-  const [errors, setError] = useState(null);
-  const {currentModel} = useContext(AppSetting)
-const [responseTyme, setResponseTime] = useState(null);
+  const [error, setError] = useState(null);
+  const [requestTime, setRequestTime] = useState(null);
+  const [responseTime, setResponseTime] = useState(null);
+  const { currentModel } = useContext(AppSetting);
 
+  // Function to handle API request with streaming enabled
   const apiRequest = async (text) => {
     try {
-      let reTime = new Date();
-      let url = "http://localhost:11434/api/generate"
+      const startTime = new Date();
+      setRequestTime(startTime.toLocaleTimeString());
+  
+      const response = await fetch("http://localhost:11434/api/generate", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: currentModel,
+          prompt: text,
+          stream: true,
+        }),
+      });
 
-      let msg = await axios.post(url, {
-        model: currentModel,
-        prompt: text,
-        stream: false,
-        // stream: true,
-      }); //end
-      let raTime = new Date();
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let done = false;
+
+      while (!done) {
+        const { done: streamDone, value } = await reader.read();
+        done = streamDone;
+
+        if (value) {
+          buffer += decoder.decode(value, { stream: true });
+          let boundary = buffer.indexOf('\n');
+          while (boundary !== -1) {
+            const chunk = buffer.slice(0, boundary).trim();
+            if (chunk) {
+              try {
+                const parsedChunk = JSON.parse(chunk);
+
+                // Add a code flag to determine if the message contains code
+                if (!parsedChunk.done) {
+                  setMessages(prevMessages => {
+                    const lastMessage = prevMessages[prevMessages.length - 1];
+                    if (lastMessage && lastMessage.name === "AI") {
+                      lastMessage.text += parsedChunk.response;
+                      lastMessage.isCode = detectCode(parsedChunk.response); // Check if it's code
+                      return [...prevMessages.slice(0, -1), lastMessage];
+                    }
+                    return [...prevMessages, { name: "AI", text: parsedChunk.response, isCode: detectCode(parsedChunk.response) }];
+                  });
+                } else if (parsedChunk.done) {
+                  setMessages(prevMessages => {
+                    const lastMessage = prevMessages[prevMessages.length - 1];
+                    if (lastMessage && lastMessage.name === "AI") {
+                      lastMessage.text += parsedChunk.response;
+                      lastMessage.isCode = detectCode(parsedChunk.response); // Check if it's code
+                      return [...prevMessages.slice(0, -1), lastMessage];
+                    }
+                    return [...prevMessages, { name: "AI", text: parsedChunk.response, isCode: detectCode(parsedChunk.response) }];
+                  });
+                }
+              } catch (e) {
+                console.error('Parsing error:', e);
+              }
+            }
+            buffer = buffer.slice(boundary + 1);
+            boundary = buffer.indexOf('\n');
+          }
+        }
+      }
+
+      const endTime = new Date();
+      setResponseTime(endTime.toLocaleTimeString());
       setLoading(false);
-      return msg.data.response;
     } catch (err) {
-      setLoading(false);
       setError(err.message);
+      setLoading(false);
     }
-  }; //end
+  };
+
+  // Function to detect if the text contains code (e.g., checking for code block delimiters)
+  const detectCode = (text) => {
+    return /```.*\n[\s\S]*\n```/.test(text); // Example heuristic for code blocks
+  };
 
   const handleSendMessage = async (event) => {
     event.preventDefault();
-    let txt = message;
-    setMessages((prevMessages) => [
+    if (message.trim() === "") return;
+
+    setMessages(prevMessages => [
       ...prevMessages,
-      { name: user, text: message },
+      { name: user, text: message }
     ]);
     setMessage("");
     setLoading(true);
-    let answer = await apiRequest(txt);
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { name: "AI", text: answer },
-    ]);
-  }; //end
-  const save = (ev) => {
-    ev.preventDefault();
-    let {  value } = ev.target.name;
-    if (value === "") {
-      setUser("user");
-      localStorage.setItem("user", "user");
-    } else {
-      setUser(value);
-      localStorage.setItem("user", value);
-    } //endIf
-    setReady(true);
-  }; //end
 
-  if (!ready)
+    await apiRequest(message);
+  };
+
+  const save = (event) => {
+    event.preventDefault();
+    const value = event.target.name.value.trim();
+    const newUser = value || "user";
+    setUser(newUser);
+    localStorage.setItem("user", newUser);
+    setReady(true);
+  };
+
+  // Function to copy code to the clipboard
+  const copyCode = (code) => {
+    navigator.clipboard.writeText(code)
+      .then(() => alert('Code copied to clipboard!'))
+      .catch(err => console.error('Failed to copy code: ', err));
+  };
+
+  if (!ready) {
     return (
       <form onSubmit={save}>
-        <label>Name: </label>
-        <input type="text" name="name" autoFocus />
+        <label htmlFor="name">Name: </label>
+        <input type="text" id="name" name="name" autoFocus />
         <button type="submit">Save</button>
       </form>
-    ); //end
+    );
+  }
+
   return (
     <>
-        <MainHeader 
-        user={user} 
-        currentModelName={currentModel}
-        />
+      <MainHeader user={user} currentModelName={currentModel} />
       <main className="container">
         <div className="row">
           <div className="col">
-            {messages.map((message, index) => {
-              if (message.name !== user) {
-                return (
-                  <div key={index}>
-                    <h2>{message.name}</h2>
-                    <Markdown remarkPlugins={[remarkGfm]}>
-                      {message.text}
-                    </Markdown>
-                  </div>
-                );
-              } //endIf
-              return (
-                <div key={index}>
-                  <h2>{message.name}</h2>
-                  <p>{message.text}</p>
+            {messages.map((msg, index) => (
+              <div key={index} className="message-container">
+                <h2>{msg.name}</h2>
+                <div className="code-container">
+                  {/* Conditionally render the Copy Code button if the message contains code */}
+                  {msg.isCode && (
+                    <button 
+                      className="copy-button"
+                      onClick={() => copyCode(msg.text)}
+                    >
+                      Copy Code
+                    </button>
+                  )}
+                  {/* Render Markdown content */}
+                  <Markdown 
+                    remarkPlugins={[remarkGfm]} 
+                    children={msg.text}
+                  />
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </div>
         <div className="row">
-          <div className="col">{loading ? <Loder /> : ""}</div>
+          <div className="col">
+            {loading && <Loader />}
+          </div>
         </div>
         <div className="row">
           <div className="col">
@@ -121,17 +191,23 @@ const [responseTyme, setResponseTime] = useState(null);
             </form>
           </div>
         </div>
+        {requestTime && responseTime && (
+          <div className="row">
+            <div className="col">
+              <p>Request Time: {requestTime}</p>
+              <p>Response Time: {responseTime}</p>
+            </div>
+          </div>
+        )}
       </main>
-      {errors ? (
+      {error && (
         <div className="row" role="alert">
-          <pre>{errors}</pre>
+          <pre>{error}</pre>
         </div>
-      ) : (
-        ""
       )}
       <MainFooter />
     </>
   );
-}; //end
+};
 
 export default Chat;
