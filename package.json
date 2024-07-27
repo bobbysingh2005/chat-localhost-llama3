@@ -1,20 +1,28 @@
 {
   "name": "chat-app",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "this simple react app to access llama3 module by ollama rest api.",
   "keywords": [
     "llama3",
     "reactJs",
     "personal",
     "chat",
-    "app"
+    "app",
+    "docker",
+    "compose",
+    "api",
+    "app",
+    "chatApi",
+    "chatApp"
   ],
   "type": "module",
   "author": "bobby singh <bobbysingh2005@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "vite",
+    "start:api": "docker compose up -d api",
+    "start:app": "docker compose up -d app",
+    "start": "docker compose up -d",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",

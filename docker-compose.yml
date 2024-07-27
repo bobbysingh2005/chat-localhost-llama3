@@ -19,7 +19,7 @@ services:
     restart: always  # Restart the container automatically if it crashes
     shm_size: 2gb  # Allocate 2GB of shared memory for the container
     mem_limit: 16gb  # Limit the container's memory usage to 20GB
-    cpus: '12'  # Allocate 12 CPU cores to the container (adjust based on actual available cores)
+    cpus: '10'  # Allocate 12 CPU cores to the container (adjust based on actual available cores)
 
     # Define environment variables for the container
     environment:
