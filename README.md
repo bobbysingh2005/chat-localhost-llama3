@@ -56,7 +56,7 @@ Start the React development server and open the application in your browser:
 ```bash
 npm run dev
 ```
-The application will be available at: http://localhost:5001.
+The application will be available at: http://localhost:8080.
 * Production Mode:
 To run both the React frontend and the Ollama backend as Docker services, use:
 ```bash
