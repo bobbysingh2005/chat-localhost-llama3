@@ -63,7 +63,7 @@ To run both the React frontend and the Ollama backend as Docker services, use:
 npm start
 ```
 The application will be accessible at: http://localhost:8080.
-Verify the status of the Docker containers with:
+* Verify the status of the Docker containers with:
 ```bash
 docker ps --format '{{.Names}}\t{{.Status}}\t{{.Ports}}'
 ```
