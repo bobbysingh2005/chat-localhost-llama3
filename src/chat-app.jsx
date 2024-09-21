@@ -16,13 +16,16 @@ const Chat = () => {
   const [requestTime, setRequestTime] = useState(null);
   const [responseTime, setResponseTime] = useState(null);
   const { currentModel } = useContext(AppSetting);
+  const [count, setCount] = useState([0]);
 
   // Function to handle API request with streaming enabled
   const apiRequest = async (text) => {
     try {
       const startTime = new Date();
       setRequestTime(startTime.toLocaleTimeString());
-  
+      
+  let countArray = [...count, count.length+1];
+  setCount(countArray);
       const response = await fetch("http://localhost:11434/api/generate", {
         method: 'POST',
         headers: {
@@ -32,6 +35,9 @@ const Chat = () => {
           model: currentModel,
           prompt: text,
           stream: true,
+          options:{
+            context: countArray
+          }
         }),
       });
 
