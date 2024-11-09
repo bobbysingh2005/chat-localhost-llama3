@@ -39,12 +39,11 @@ const Chat = () => {
             context: countArray
           }
         }),
-      });
+      });//endFetchResponse
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      };//endIf
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
@@ -52,48 +51,58 @@ const Chat = () => {
 
       while (!done) {
         const { done: streamDone, value } = await reader.read();
-        done = streamDone;
-
+        done = streamDone;  // Update done when stream ends
+    
         if (value) {
+          // Add the new chunk to the buffer and decode it
           buffer += decoder.decode(value, { stream: true });
+    
+          // Process all complete lines (delimited by '\n')
           let boundary = buffer.indexOf('\n');
           while (boundary !== -1) {
-            const chunk = buffer.slice(0, boundary).trim();
+            const chunk = buffer.slice(0, boundary).trim();  // Extract a chunk
             if (chunk) {
               try {
-                const parsedChunk = JSON.parse(chunk);
-
-                // Add a code flag to determine if the message contains code
-                if (!parsedChunk.done) {
+                const parsedChunk = JSON.parse(chunk);  // Parse the chunk as JSON
+    
+                // Avoid processing if the chunk is marked as done (end of data)
+                if (parsedChunk.done) {
+                  const isCode = await detectCode(parsedChunk.response);  // Async code detection (if needed)
                   setMessages(prevMessages => {
                     const lastMessage = prevMessages[prevMessages.length - 1];
                     if (lastMessage && lastMessage.name === "AI") {
                       lastMessage.text += parsedChunk.response;
-                      lastMessage.isCode = detectCode(parsedChunk.response); // Check if it's code
+                      lastMessage.isCode = isCode;  // Add code flag if applicable
                       return [...prevMessages.slice(0, -1), lastMessage];
                     }
-                    return [...prevMessages, { name: "AI", text: parsedChunk.response, isCode: detectCode(parsedChunk.response) }];
+                    return [...prevMessages, { name: "AI", text: parsedChunk.response, isCode: isCode }];
                   });
-                } else if (parsedChunk.done) {
+                } else {
+                  const isCode = await detectCode(parsedChunk.response);  // Async code detection (if needed)
                   setMessages(prevMessages => {
                     const lastMessage = prevMessages[prevMessages.length - 1];
                     if (lastMessage && lastMessage.name === "AI") {
                       lastMessage.text += parsedChunk.response;
-                      lastMessage.isCode = detectCode(parsedChunk.response); // Check if it's code
+                      lastMessage.isCode = isCode;  // Add code flag if applicable
                       return [...prevMessages.slice(0, -1), lastMessage];
                     }
-                    return [...prevMessages, { name: "AI", text: parsedChunk.response, isCode: detectCode(parsedChunk.response) }];
+                    return [...prevMessages, { name: "AI", text: parsedChunk.response, isCode: isCode }];
                   });
                 }
               } catch (e) {
                 console.error('Parsing error:', e);
               }
             }
+    
+            // Slice the buffer after processing the chunk, and look for the next boundary
             buffer = buffer.slice(boundary + 1);
             boundary = buffer.indexOf('\n');
           }
         }
       }
+    
+      // At this point, the stream is finished (`done === true`), ensure no more updates.
+      console.log('Stream finished processing.');
 
       const endTime = new Date();
       setResponseTime(endTime.toLocaleTimeString());

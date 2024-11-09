@@ -3,8 +3,9 @@ import { createContext,  useMemo,  useState } from "react";
 export const AppSetting = createContext();
 //eslint-disable-next-line
 export const AppSettingProvider = ({ children }) => {
-  const [currentModel, setModel] = useState("llama3.1");
+  const [currentModel, setModel] = useState("llama3.2");
   const modelList = useMemo(()=>[
+    { name: "Llama 3.2", value: "llama3.2" },
     { name: "Llama 3.1", value: "llama3.1" },
     { name: "Deepseek Coder v2", value: "deepseek-coder-v2" },
     { name: "Code Gemma", value: "codegemma:7b" },
