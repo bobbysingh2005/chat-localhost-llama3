@@ -8,10 +8,10 @@ import { fileURLToPath, URL } from "node:url";
 export default defineConfig({
   server: {
     host: "0.0.0.0",
-    // host: "127.0.0.1",
     port: 8080,
-    // hot: true,
-    // open: true,
+    hmr: { host: 'localhost' },
+    hot: true,
+    open: true,
   },
   plugins: [react()],
   resolve: {

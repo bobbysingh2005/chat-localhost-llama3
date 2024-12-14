@@ -1,10 +1,10 @@
-import { useContext, useState } from 'react';
-import Markdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import Loader from './components/loader';
-import MainHeader from './main-header';
-import MainFooter from './main-footer';
-import { AppSetting } from './App-setting';
+import { useContext, useState } from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import Loader from "./components/loader";
+import MainHeader from "./main-header";
+import MainFooter from "./main-footer";
+import { AppSetting } from "./App-setting";
 
 const Chat = () => {
   const [message, setMessage] = useState("");
@@ -13,37 +13,30 @@ const Chat = () => {
   const [ready, setReady] = useState(!!localStorage.getItem("user"));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [requestTime, setRequestTime] = useState(null);
-  const [responseTime, setResponseTime] = useState(null);
   const { currentModel } = useContext(AppSetting);
   const [count, setCount] = useState([0]);
+  const [currentContext, setContext] = useState([]);
 
   // Function to handle API request with streaming enabled
   const apiRequest = async (text) => {
     try {
-      const startTime = new Date();
-      setRequestTime(startTime.toLocaleTimeString());
-      
-  let countArray = [...count, count.length+1];
-  setCount(countArray);
       const response = await fetch("http://localhost:11434/api/generate", {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           model: currentModel,
           prompt: text,
           stream: true,
-          options:{
-            context: countArray
-          }
+          context: currentContext,
         }),
-      });//endFetchResponse
+      }); //endFetchResponse
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
-      };//endIf
+      } //endIf
+
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
@@ -51,61 +44,81 @@ const Chat = () => {
 
       while (!done) {
         const { done: streamDone, value } = await reader.read();
-        done = streamDone;  // Update done when stream ends
-    
+        done = streamDone; // Update done when stream ends
+
         if (value) {
           // Add the new chunk to the buffer and decode it
           buffer += decoder.decode(value, { stream: true });
-    
+
           // Process all complete lines (delimited by '\n')
-          let boundary = buffer.indexOf('\n');
+          let boundary = buffer.indexOf("\n");
           while (boundary !== -1) {
-            const chunk = buffer.slice(0, boundary).trim();  // Extract a chunk
+            const chunk = buffer.slice(0, boundary).trim(); // Extract a chunk
             if (chunk) {
               try {
-                const parsedChunk = JSON.parse(chunk);  // Parse the chunk as JSON
-    
+                const parsedChunk = JSON.parse(chunk); // Parse the chunk as JSON
+
                 // Avoid processing if the chunk is marked as done (end of data)
                 if (parsedChunk.done) {
-                  const isCode = await detectCode(parsedChunk.response);  // Async code detection (if needed)
-                  setMessages(prevMessages => {
+                  const isCode = await detectCode(parsedChunk.response); // Async code detection (if needed)
+                  
+                  setMessages((prevMessages) => {
                     const lastMessage = prevMessages[prevMessages.length - 1];
                     if (lastMessage && lastMessage.name === "AI") {
                       lastMessage.text += parsedChunk.response;
-                      lastMessage.isCode = isCode;  // Add code flag if applicable
+                      lastMessage.isCode = isCode; // Add code flag if applicable
                       return [...prevMessages.slice(0, -1), lastMessage];
-                    }
-                    return [...prevMessages, { name: "AI", text: parsedChunk.response, isCode: isCode }];
-                  });
+                    };//endIf
+                    return [
+                      ...prevMessages,
+                      {
+                        name: "AI",
+                        text: parsedChunk.response,
+                        isCode: isCode,
+                      },
+                    ];
+                  }); //endSetMessage
+                  
+                  if(parsedChunk.context){
+                    // let ncontext = [...currentContext, ...parsedChunk.context];
+                    let ncontext = parsedChunk.context;
+                  setContext(ncontext);
+                };//endIf
                 } else {
-                  const isCode = await detectCode(parsedChunk.response);  // Async code detection (if needed)
-                  setMessages(prevMessages => {
+                  const isCode = await detectCode(parsedChunk.response); // Async code detection (if needed)
+                  setMessages((prevMessages) => {
                     const lastMessage = prevMessages[prevMessages.length - 1];
                     if (lastMessage && lastMessage.name === "AI") {
                       lastMessage.text += parsedChunk.response;
-                      lastMessage.isCode = isCode;  // Add code flag if applicable
+                      lastMessage.isCode = isCode; // Add code flag if applicable
                       return [...prevMessages.slice(0, -1), lastMessage];
-                    }
-                    return [...prevMessages, { name: "AI", text: parsedChunk.response, isCode: isCode }];
-                  });
-                }
+                    } //endIf
+                    return [
+                      ...prevMessages,
+                      {
+                        name: "AI",
+                        text: parsedChunk.response,
+                        isCode: isCode,
+                      },
+                    ];
+                  }); //endSetMessage
+                } //endIf
+
               } catch (e) {
-                console.error('Parsing error:', e);
+                console.error("Parsing error:", e);
               }
             }
-    
+
             // Slice the buffer after processing the chunk, and look for the next boundary
             buffer = buffer.slice(boundary + 1);
-            boundary = buffer.indexOf('\n');
+            boundary = buffer.indexOf("\n");
           }
-        }
-      }
-    
-      // At this point, the stream is finished (`done === true`), ensure no more updates.
-      console.log('Stream finished processing.');
+        };///endIfValue
+      };//endWhile
 
-      const endTime = new Date();
-      setResponseTime(endTime.toLocaleTimeString());
+      // At this point, the stream is finished (`done === true`), ensure no more updates.
+      console.log("Stream finished processing.");
+
       setLoading(false);
     } catch (err) {
       setError(err.message);
@@ -122,9 +135,9 @@ const Chat = () => {
     event.preventDefault();
     if (message.trim() === "") return;
 
-    setMessages(prevMessages => [
+    setMessages((prevMessages) => [
       ...prevMessages,
-      { name: user, text: message }
+      { name: user, text: message },
     ]);
     setMessage("");
     setLoading(true);
@@ -143,9 +156,10 @@ const Chat = () => {
 
   // Function to copy code to the clipboard
   const copyCode = (code) => {
-    navigator.clipboard.writeText(code)
-      .then(() => alert('Code copied to clipboard!'))
-      .catch(err => console.error('Failed to copy code: ', err));
+    navigator.clipboard
+      .writeText(code)
+      .then(() => alert("Code copied to clipboard!"))
+      .catch((err) => console.error("Failed to copy code: ", err));
   };
 
   if (!ready) {
@@ -170,7 +184,7 @@ const Chat = () => {
                 <div className="code-container">
                   {/* Conditionally render the Copy Code button if the message contains code */}
                   {msg.isCode && (
-                    <button 
+                    <button
                       className="copy-button"
                       onClick={() => copyCode(msg.text)}
                     >
@@ -178,19 +192,14 @@ const Chat = () => {
                     </button>
                   )}
                   {/* Render Markdown content */}
-                  <Markdown 
-                    remarkPlugins={[remarkGfm]} 
-                    children={msg.text}
-                  />
+                  <Markdown remarkPlugins={[remarkGfm]} children={msg.text} />
                 </div>
               </div>
             ))}
           </div>
         </div>
         <div className="row">
-          <div className="col">
-            {loading && <Loader />}
-          </div>
+          <div className="col">{loading && <Loader />}</div>
         </div>
         <div className="row">
           <div className="col">
@@ -206,14 +215,6 @@ const Chat = () => {
             </form>
           </div>
         </div>
-        {requestTime && responseTime && (
-          <div className="row">
-            <div className="col">
-              <p>Request Time: {requestTime}</p>
-              <p>Response Time: {responseTime}</p>
-            </div>
-          </div>
-        )}
       </main>
       {error && (
         <div className="row" role="alert">
