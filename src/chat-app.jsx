@@ -88,6 +88,8 @@ const Chat = () => {
                   const isCode = await detectCode(parsedChunk.response); // Async code detection (if needed)
                   setMessages((prevMessages) => {
                     const lastMessage = prevMessages[prevMessages.length - 1];
+                    const lastText = lastMessage.split(' ')
+                    // alert(`lastMessage: ${lastMessage.text}, parsedChunk.response: ${parsedChunk.response}`)
                     if (lastMessage && lastMessage.name === "AI") {
                       lastMessage.text += parsedChunk.response;
                       lastMessage.isCode = isCode; // Add code flag if applicable

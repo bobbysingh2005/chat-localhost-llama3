@@ -19,8 +19,8 @@ services:
     image: ollama/ollama:rocm  # Use the latest version of the Ollama image
     restart: always  # Restart the container automatically if it crashes
     shm_size: 4gb  # Allocate 2GB of shared memory for the container
-    mem_limit: 10gb  # Limit the container's memory usage to 20GB
-    cpus: '8'  # Allocate 12 CPU cores to the container (adjust based on actual available cores)
+    mem_limit: 20gb  # Limit the container's memory usage to 20GB
+    cpus: '10'  # Allocate 12 CPU cores to the container (adjust based on actual available cores)
 
     # Define environment variables for the container
     environment:
