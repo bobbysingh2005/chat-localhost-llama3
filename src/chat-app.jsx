@@ -1,10 +1,13 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Loader from "./components/loader";
 import MainHeader from "./main-header";
 import MainFooter from "./main-footer";
 import { AppSetting } from "./App-setting";
+import Stt from "./stt";
+
+
 
 const Chat = () => {
   const [message, setMessage] = useState("");
@@ -17,14 +20,13 @@ const Chat = () => {
   const [count, setCount] = useState([0]);
   const [currentContext, setContext] = useState([]);
 
+  
   // Function to handle API request with streaming enabled
   const apiRequest = async (text) => {
     try {
       const response = await fetch("http://localhost:11434/api/generate", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: currentModel,
           prompt: text,
@@ -32,6 +34,7 @@ const Chat = () => {
           context: currentContext,
         }),
       }); //endFetchResponse
+
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -52,72 +55,66 @@ const Chat = () => {
 
           // Process all complete lines (delimited by '\n')
           let boundary = buffer.indexOf("\n");
+
           while (boundary !== -1) {
-            const chunk = buffer.slice(0, boundary).trim(); // Extract a chunk
+            // Extract a chunk
+            const chunk = buffer.slice(0, boundary).trim(); 
+
             if (chunk) {
               try {
-                const parsedChunk = JSON.parse(chunk); // Parse the chunk as JSON
+                // Parse the chunk as JSON
+                const parsedChunk = JSON.parse(chunk); 
 
                 // Avoid processing if the chunk is marked as done (end of data)
                 if (parsedChunk.done) {
-                  const isCode = await detectCode(parsedChunk.response); // Async code detection (if needed)
-                  
-                  setMessages((prevMessages) => {
-                    const lastMessage = prevMessages[prevMessages.length - 1];
-                    if (lastMessage && lastMessage.name === "AI") {
-                      lastMessage.text += parsedChunk.response;
-                      lastMessage.isCode = isCode; // Add code flag if applicable
-                      return [...prevMessages.slice(0, -1), lastMessage];
-                    };//endIf
-                    return [
-                      ...prevMessages,
-                      {
-                        name: "AI",
-                        text: parsedChunk.response,
-                        isCode: isCode,
-                      },
-                    ];
-                  }); //endSetMessage
-                  
-                  if(parsedChunk.context){
+                  // Async code detection (if needed)
+                  const isCode = await detectCode(parsedChunk.response); 
+                                    if (parsedChunk.context) {
                     // let ncontext = [...currentContext, ...parsedChunk.context];
                     let ncontext = parsedChunk.context;
-                  setContext(ncontext);
-                };//endIf
+                    setContext(ncontext);
+                  } //endIf
                 } else {
-                  const isCode = await detectCode(parsedChunk.response); // Async code detection (if needed)
-                  setMessages((prevMessages) => {
+                  // Async code detection (if needed)
+                  const isCode = await detectCode(parsedChunk.response);
+
+                  await setMessages((prevMessages) => {
                     const lastMessage = prevMessages[prevMessages.length - 1];
                     if (lastMessage && lastMessage.name === "AI") {
-                      const lastText = lastMessage.text.split(' ')
-                    // alert(`lastText: ${lastText[lastText.length-1]}, parsedChunk: ${parsedChunk.response}`)
-                    // alert(lastMessage.text+' '+parsedChunk.response)
+                      const words = lastMessage.text.split(" ");
+                      if (words.length > 0 && words[words.length - 1] !== parsedChunk.response) {
                       lastMessage.text += parsedChunk.response;
-                      lastMessage.isCode = isCode; // Add code flag if applicable
-                      return [...prevMessages.slice(0, -1), lastMessage];
-                    } //endIf
-                    return [
-                      ...prevMessages,
-                      {
-                        name: "AI",
-                        text: parsedChunk.response,
-                        isCode: isCode,
-                      },
-                    ];
+                      // lastMessage.text += ` ${parsedChunk.response}`;
+                      }else{
+                      lastMessage.text += ` ${parsedChunk.response}`;
+                      };//endIf
+                        // Add code flag if applicable
+                        lastMessage.isCode = isCode;
+                        
+                        return [...prevMessages.slice(0, -1), lastMessage];
+                    };//endIf
+                      return [
+                        ...prevMessages,
+                        {
+                          name: "AI",
+                          text: parsedChunk.response.trim(),
+                          isCode: isCode,
+                        },
+                      ];
+                    
                   }); //endSetMessage
                 } //endIf
-
               } catch (e) {
                 console.error("Parsing error:", e);
               }
-            }
+            } //endIfChunk
 
             // Slice the buffer after processing the chunk, and look for the next boundary
             buffer = buffer.slice(boundary + 1);
             boundary = buffer.indexOf("\n");
-          }
-        };///endIfValue
-      };//endWhile
+          } //endWhile
+        } //endIfValues
+      } //endWhile
 
       // At this point, the stream is finished (`done === true`), ensure no more updates.
       console.log("Stream finished processing.");
@@ -164,6 +161,19 @@ const Chat = () => {
       .then(() => alert("Code copied to clipboard!"))
       .catch((err) => console.error("Failed to copy code: ", err));
   };
+
+  //function tts
+const speak = () => {
+  let lastIndex = messages.length - 1;
+  // alert(JSON.stringify(messages,null,2))
+  // alert(lastIndex)
+  let message = messages[lastIndex].text;
+  const utterance = new SpeechSynthesisUtterance(message);
+  window.speechSynthesis.speak(utterance);
+};//endSpeak
+useEffect(()=>{
+  console.log('ready')
+},[]);//endUseEffect
 
   if (!ready) {
     return (
@@ -214,7 +224,9 @@ const Chat = () => {
                 placeholder="Type a message..."
                 autoFocus
               />
+              {/* <Stt /> */}
               <button type="submit">Send</button>
+              <button type="button" onClick={()=>speak()}>Speak</button>
             </form>
           </div>
         </div>

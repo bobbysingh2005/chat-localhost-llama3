@@ -16,11 +16,12 @@ services:
   api:
     container_name: chatApi  # Name of the container for easy management
     # image: ollama/ollama:rocm  # Use the latest version of the Ollama image
-    image: ollama/ollama:rocm  # Use the latest version of the Ollama image
+    # image: ollama/ollama:rocm  # Use the latest version of the Ollama image
+    image: ollama/ollama:latest # Use the latest version of the Ollama image
     restart: always  # Restart the container automatically if it crashes
-    shm_size: 4gb  # Allocate 2GB of shared memory for the container
-    mem_limit: 20gb  # Limit the container's memory usage to 20GB
-    cpus: '10'  # Allocate 12 CPU cores to the container (adjust based on actual available cores)
+    shm_size: 6gb  # Allocate 2GB of shared memory for the container
+    mem_limit: 14gb  # Limit the container's memory usage to 20GB
+    cpus: '12'  # Allocate 12 CPU cores to the container (adjust based on actual available cores)
 
     # Define environment variables for the container
     environment:
@@ -43,7 +44,7 @@ services:
 
     # Mount host directories to the container for persistent storage
     volumes:
-      # - ./.ollama:/root/.ollama  # Map local directory to container directory for persistent data
+      - ./.ollama:/root/.ollama:z  # Map local directory to container directory for persistent data
       - ollama:/root/.ollama:z  # Use named volume for additional persistent storage
 
     networks:
