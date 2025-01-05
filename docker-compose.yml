@@ -1,26 +1,14 @@
 # version: '3.8'  # Specify the version of Docker Compose file format
 
-# Define volumes for persistent data
-volumes:
-  ollama:  # Named volume to persist model data
-
-# Define networks for container communication
-networks:
-  llama_net:
-    # Optional: Uncomment and configure if you need an external network configuration
-    # driver: bridge
-    # external: true
-
 services:
   # Service for running the LLaMA model
   api:
     container_name: chatApi  # Name of the container for easy management
-    # image: ollama/ollama:rocm  # Use the latest version of the Ollama image
-    # image: ollama/ollama:rocm  # Use the latest version of the Ollama image
-    image: ollama/ollama:latest # Use the latest version of the Ollama image
+    # image: ollama/ollama:latest # Use the latest version of the Ollama image
+    image: ollama/ollama:rocm  # Use the latest version of the Ollama image
     restart: always  # Restart the container automatically if it crashes
-    shm_size: 6gb  # Allocate 2GB of shared memory for the container
-    mem_limit: 14gb  # Limit the container's memory usage to 20GB
+    shm_size: 8gb  # Allocate 2GB of shared memory for the container
+    mem_limit: 16gb  # Limit the container's memory usage to 20GB
     cpus: '12'  # Allocate 12 CPU cores to the container (adjust based on actual available cores)
 
     # Define environment variables for the container
@@ -70,3 +58,15 @@ services:
 
     networks:
       - llama_net  # Connect the container to the custom network
+
+
+# Define volumes for persistent data
+volumes:
+  ollama:  # Named volume to persist model data
+
+# Define networks for container communication
+networks:
+  llama_net:
+    # Optional: Uncomment and configure if you need an external network configuration
+    # driver: bridge
+    # external: true
