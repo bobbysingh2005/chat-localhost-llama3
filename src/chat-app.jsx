@@ -1,13 +1,12 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeSanitize from "rehype-sanitize";
 import Loader from "./components/loader";
 import MainHeader from "./main-header";
 import MainFooter from "./main-footer";
 import { AppSetting } from "./App-setting";
-import Stt from "./stt";
-
-
+import './assets/style.css';
 
 const Chat = () => {
   const [message, setMessage] = useState("");
@@ -17,11 +16,14 @@ const Chat = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { currentModel } = useContext(AppSetting);
-  const [count, setCount] = useState([0]);
   const [currentContext, setContext] = useState([]);
 
-  
-  // Function to handle API request with streaming enabled
+  // Detects if the text contains code blocks
+  const detectCode = (text) => {
+    return /```[\s\S]+?```/.test(text.trim());
+  };
+
+  // API call to local model with stream reading
   const apiRequest = async (text) => {
     try {
       const response = await fetch("http://localhost:11434/api/generate", {
@@ -33,12 +35,9 @@ const Chat = () => {
           stream: true,
           context: currentContext,
         }),
-      }); //endFetchResponse
+      });
 
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      } //endIf
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
@@ -47,77 +46,59 @@ const Chat = () => {
 
       while (!done) {
         const { done: streamDone, value } = await reader.read();
-        done = streamDone; // Update done when stream ends
+        done = streamDone;
 
         if (value) {
-          // Add the new chunk to the buffer and decode it
           buffer += decoder.decode(value, { stream: true });
-
-          // Process all complete lines (delimited by '\n')
           let boundary = buffer.indexOf("\n");
 
           while (boundary !== -1) {
-            // Extract a chunk
-            const chunk = buffer.slice(0, boundary).trim(); 
+            const chunk = buffer.slice(0, boundary).trim();
 
             if (chunk) {
               try {
-                // Parse the chunk as JSON
-                const parsedChunk = JSON.parse(chunk); 
+                const parsedChunk = JSON.parse(chunk);
 
-                // Avoid processing if the chunk is marked as done (end of data)
-                if (parsedChunk.done) {
-                  // Async code detection (if needed)
-                  const isCode = await detectCode(parsedChunk.response); 
-                                    if (parsedChunk.context) {
-                    // let ncontext = [...currentContext, ...parsedChunk.context];
-                    let ncontext = parsedChunk.context;
-                    setContext(ncontext);
-                  } //endIf
-                } else {
-                  // Async code detection (if needed)
-                  const isCode = await detectCode(parsedChunk.response);
+                setMessages((prevMessages) => {
+                  const lastMessage = prevMessages[prevMessages.length - 1];
+                  const combinedText = lastMessage?.text
+                    ? lastMessage.text + ` ${parsedChunk.response}`
+                    : parsedChunk.response;
 
-                  await setMessages((prevMessages) => {
-                    const lastMessage = prevMessages[prevMessages.length - 1];
-                    if (lastMessage && lastMessage.name === "AI") {
-                      const words = lastMessage.text.split(" ");
-                      if (words.length > 0 && words[words.length - 1] !== parsedChunk.response) {
-                      lastMessage.text += parsedChunk.response;
-                      // lastMessage.text += ` ${parsedChunk.response}`;
-                      }else{
-                      lastMessage.text += ` ${parsedChunk.response}`;
-                      };//endIf
-                        // Add code flag if applicable
-                        lastMessage.isCode = isCode;
-                        
-                        return [...prevMessages.slice(0, -1), lastMessage];
-                    };//endIf
-                      return [
-                        ...prevMessages,
-                        {
-                          name: "AI",
-                          text: parsedChunk.response.trim(),
-                          isCode: isCode,
-                        },
-                      ];
-                    
-                  }); //endSetMessage
-                } //endIf
+                  const isCode = detectCode(combinedText);
+
+                  if (lastMessage && lastMessage.name === "AI") {
+                    const updatedMessage = {
+                      ...lastMessage,
+                      text: combinedText,
+                      isCode,
+                    };
+                    return [...prevMessages.slice(0, -1), updatedMessage];
+                  }
+
+                  return [
+                    ...prevMessages,
+                    {
+                      name: "AI",
+                      text: parsedChunk.response.trim(),
+                      isCode: detectCode(parsedChunk.response),
+                    },
+                  ];
+                });
+
+                if (parsedChunk.done && parsedChunk.context) {
+                  setContext(parsedChunk.context);
+                }
               } catch (e) {
                 console.error("Parsing error:", e);
               }
-            } //endIfChunk
+            }
 
-            // Slice the buffer after processing the chunk, and look for the next boundary
             buffer = buffer.slice(boundary + 1);
             boundary = buffer.indexOf("\n");
-          } //endWhile
-        } //endIfValues
-      } //endWhile
-
-      // At this point, the stream is finished (`done === true`), ensure no more updates.
-      console.log("Stream finished processing.");
+          }
+        }
+      }
 
       setLoading(false);
     } catch (err) {
@@ -126,25 +107,19 @@ const Chat = () => {
     }
   };
 
-  // Function to detect if the text contains code (e.g., checking for code block delimiters)
-  const detectCode = (text) => {
-    return /```.*\n[\s\S]*\n```/.test(text); // Example heuristic for code blocks
-  };
-
+  // Handle message submission
   const handleSendMessage = async (event) => {
     event.preventDefault();
     if (message.trim() === "") return;
 
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { name: user, text: message },
-    ]);
+    setMessages((prev) => [...prev, { name: user, text: message }]);
     setMessage("");
     setLoading(true);
 
     await apiRequest(message);
   };
 
+  // Save the user's name and mark them as ready
   const save = (event) => {
     event.preventDefault();
     const value = event.target.name.value.trim();
@@ -154,27 +129,23 @@ const Chat = () => {
     setReady(true);
   };
 
-  // Function to copy code to the clipboard
+  // Copy code to clipboard
   const copyCode = (code) => {
-    navigator.clipboard
-      .writeText(code)
+    navigator.clipboard.writeText(code)
       .then(() => alert("Code copied to clipboard!"))
       .catch((err) => console.error("Failed to copy code: ", err));
   };
 
-  //function tts
-const speak = () => {
-  let lastIndex = messages.length - 1;
-  // alert(JSON.stringify(messages,null,2))
-  // alert(lastIndex)
-  let message = messages[lastIndex].text;
-  const utterance = new SpeechSynthesisUtterance(message);
-  window.speechSynthesis.speak(utterance);
-};//endSpeak
-useEffect(()=>{
-  console.log('ready')
-},[]);//endUseEffect
+  // Speak out the last message
+  const speak = (text) => {
+    const messageToSpeak = text || messages[messages.length - 1]?.text;
+    if (!messageToSpeak) return;
 
+    const utterance = new SpeechSynthesisUtterance(messageToSpeak);
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // Ask for user's name first
   if (!ready) {
     return (
       <form onSubmit={save}>
@@ -188,54 +159,88 @@ useEffect(()=>{
   return (
     <>
       <MainHeader user={user} currentModelName={currentModel} />
-      <main className="container">
-        <div className="row">
-          <div className="col">
-            {messages.map((msg, index) => (
-              <div key={index} className="message-container">
-                <h2>{msg.name}</h2>
-                <div className="code-container">
-                  {/* Conditionally render the Copy Code button if the message contains code */}
-                  {msg.isCode && (
-                    <button
-                      className="copy-button"
-                      onClick={() => copyCode(msg.text)}
-                    >
-                      Copy Code
-                    </button>
-                  )}
-                  {/* Render Markdown content */}
-                  <Markdown remarkPlugins={[remarkGfm]} children={msg.text} />
-                </div>
+
+      <main className="container my-5">
+        <div className="chat-box bg-light p-4 rounded-3" role="log" aria-label="Chat messages">
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`message mb-3 p-3 rounded-3 ${msg.name === user
+                ? "bg-primary text-white ms-auto"
+                : "bg-secondary text-dark"
+              }`}
+            >
+              <div className="message-header d-flex justify-content-between align-items-center">
+                <h5>{msg.name}</h5>
               </div>
-            ))}
-          </div>
+              <div className="message-body">
+                <Markdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeSanitize]}
+                  components={{
+                    code({ node, inline, className, children, ...props }) {
+                      const code = Array.isArray(children)
+                        ? children.join("").replace(/\s+$/, "")
+                        : String(children).replace(/\s+$/, "");
+
+                      return !inline ? (
+                        <div className="position-relative">
+                          <pre className={className}>
+                            <code {...props}>{code}</code>
+                          </pre>
+                          <button
+                            onClick={() => copyCode(code)}
+                            className="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 m-2"
+                            style={{ zIndex: 1 }}
+                          >
+                            Copy
+                          </button>
+                        </div>
+                      ) : (
+                        <code className={className} {...props}>{code}</code>
+                      );
+                    }
+                  }}
+                >
+                  {msg.text}
+                </Markdown>
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="row">
-          <div className="col">{loading && <Loader />}</div>
-        </div>
-        <div className="row">
-          <div className="col">
-            <form onSubmit={handleSendMessage}>
-              <input
-                type="text"
-                value={message}
-                onChange={(event) => setMessage(event.target.value)}
-                placeholder="Type a message..."
-                autoFocus
-              />
-              {/* <Stt /> */}
-              <button type="submit">Send</button>
-              <button type="button" onClick={()=>speak()}>Speak</button>
-            </form>
-          </div>
+
+        {loading && <Loader />}
+
+        <div className="message-input d-flex align-items-center mt-4">
+          <form onSubmit={handleSendMessage} className="w-100 d-flex">
+            <textarea
+              value={message}
+              onChange={(event) => setMessage(event.target.value)}
+              placeholder="Type a message..."
+              className="form-control me-2"
+              rows={2}
+              aria-label="Type a message"
+            />
+            <button type="submit" className="btn btn-primary">Send</button>
+            <button
+              type="button"
+              className="btn btn-info ms-2"
+              onClick={() => speak()}
+              aria-label="Speak last message"
+              disabled={loading}
+            >
+              Speak
+            </button>
+          </form>
         </div>
       </main>
+
       {error && (
-        <div className="row" role="alert">
+        <div className="alert alert-danger mt-3" role="alert">
           <pre>{error}</pre>
         </div>
       )}
+
       <MainFooter />
     </>
   );

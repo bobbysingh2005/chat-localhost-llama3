@@ -44,7 +44,7 @@ services:
     restart: always  # Restart the container automatically if it crashes
     build:
       context: ./  # Build the image using the Dockerfile in the current directory
-      dockerfile: Dockerfile  # Specify the Dockerfile to use
+  dockerfile: Dockerfile  # Specify the Dockerfile to use
 
     # Define a health check to ensure the service is running correctly
     healthcheck:
