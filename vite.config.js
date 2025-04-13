@@ -9,7 +9,7 @@ import { fileURLToPath, URL } from "node:url";
 export default defineConfig({
   server: {
     host: "0.0.0.0",
-    port: 8080,
+    port: 8090,
     hmr: { host: "localhost" },
     hot: true,
     open: true,
