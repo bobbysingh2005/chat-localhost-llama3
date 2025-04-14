@@ -33,26 +33,6 @@ const Chat = () => {
   const [currentContext, setContext] = useState([]); // Context for the chat conversation
   const { currentModel, apiUrl, isStream } = useContext(AppSetting);
 
-  // A custom renderer to apply syntax highlighting to code blocks
-  const renderers = {
-    code({ node, inline, className, children, ...props }) {
-      const language = className?.replace("language-", "") || ""; // Get the language from className (e.g., "language-js")
-      return !inline ? (
-        <SyntaxHighlighter
-          language={language}
-          style={solarizedlight}
-          {...props}
-        >
-          {String(children).replace(/\n$/, "")}
-        </SyntaxHighlighter>
-      ) : (
-        <code className={className} {...props}>
-          {children}
-        </code>
-      );
-    },
-  }; //end
-
   // API request function with streaming enabled to fetch responses from the model
   const apiRequest = async (text) => {
     try {
@@ -96,20 +76,19 @@ const Chat = () => {
             console.error(error);
           }); //end
       } else {
-        let response = await fetch("http://localhost:11434/api/generate", {
+        const response = await fetch("http://localhost:11434/api/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             model: currentModel,
             prompt: text,
-            stream: isStream,
+            stream: true,
             context: currentContext,
           }),
-        }); //end
+        });
 
-        if (!response.ok) {
+        if (!response.ok)
           throw new Error(`HTTP error! status: ${response.status}`);
-        }
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
@@ -122,7 +101,6 @@ const Chat = () => {
 
           if (value) {
             buffer += decoder.decode(value, { stream: true });
-
             let boundary = buffer.indexOf("\n");
 
             while (boundary !== -1) {
@@ -131,29 +109,36 @@ const Chat = () => {
               if (chunk) {
                 try {
                   const parsedChunk = JSON.parse(chunk);
-                  const isCode = detectCode(parsedChunk.response);
 
-                  if (parsedChunk.done) {
-                    if (parsedChunk.context) {
-                      setContext(parsedChunk.context);
+                  setMessages((prevMessages) => {
+                    const lastMessage = prevMessages[prevMessages.length - 1];
+                    const combinedText = lastMessage?.text
+                      ? lastMessage.text + ` ${parsedChunk.response}`
+                      : parsedChunk.response;
+
+                    const isCode = detectCode(combinedText);
+
+                    if (lastMessage && lastMessage.name === "AI") {
+                      const updatedMessage = {
+                        ...lastMessage,
+                        text: combinedText,
+                        isCode,
+                      };
+                      return [...prevMessages.slice(0, -1), updatedMessage];
                     }
-                  } else {
-                    setMessages((prevMessages) => {
-                      const lastMessage = prevMessages[prevMessages.length - 1];
-                      if (lastMessage && lastMessage.name === "AI") {
-                        lastMessage.text += ` ${parsedChunk.response}`;
-                        lastMessage.isCode = isCode;
-                        return [...prevMessages.slice(0, -1), lastMessage];
-                      }
-                      return [
-                        ...prevMessages,
-                        {
-                          name: "AI",
-                          text: parsedChunk.response.trim(),
-                          isCode: isCode,
-                        },
-                      ];
-                    });
+
+                    return [
+                      ...prevMessages,
+                      {
+                        name: "AI",
+                        text: parsedChunk.response.trim(),
+                        isCode: detectCode(parsedChunk.response),
+                      },
+                    ];
+                  });
+
+                  if (parsedChunk.done && parsedChunk.context) {
+                    setContext(parsedChunk.context);
                   }
                 } catch (e) {
                   console.error("Parsing error:", e);
@@ -162,16 +147,17 @@ const Chat = () => {
 
               buffer = buffer.slice(boundary + 1);
               boundary = buffer.indexOf("\n");
-            }
-          }
-        }
+            } //endWhileBoundry
+          } //endIfValue
+        } //endWhileDone
+
+        setLoading(false);
       } //endIf
-      setLoading(false);
     } catch (err) {
       setError(err.message);
       setLoading(false);
     }
-  };
+  }; //endApiRequest
 
   // Detect if the text contains a code block using triple backticks
   const detectCode = (text) => {
@@ -179,24 +165,22 @@ const Chat = () => {
     console.log(
       `isCode: ${/```[\s\S]+?```/.test(text.trim())}, chunk: ${text}`
     );
-    return /`` s`[\s\S]+?``\s`/.test(text.trim());
+    return /```[\s\S]+?``\s`/.test(text.trim());
     // return /```[\s\S]+?```/.test(text.trim());
-  };
+  }; //endDetectCodeMethod
 
   // Handle sending a message and starting an API request
   const handleSendMessage = async (event) => {
     event.preventDefault();
     if (message.trim() === "") return;
-
     setMessages((prevMessages) => [
       ...prevMessages,
       { name: user, text: message },
     ]);
     setMessage("");
     setLoading(true);
-
-    await apiRequest(message);
-  };
+    apiRequest(message);
+  }; //endHandleSendMessage
 
   // Save the user's name to localStorage and update UI
   const save = (event) => {
@@ -206,7 +190,7 @@ const Chat = () => {
     setUser(newUser);
     localStorage.setItem("user", newUser);
     setReady(true);
-  };
+  }; //endSave
 
   // Copy code to clipboard
   const copyCode = (code) => {
@@ -214,7 +198,7 @@ const Chat = () => {
       .writeText(code)
       .then(() => alert("Code copied to clipboard!"))
       .catch((err) => console.error("Failed to copy code: ", err));
-  };
+  }; //endCopyCodeMethod
 
   // Text-to-speech function for screen readers to read the response aloud
   const speak = (text) => {
@@ -222,7 +206,7 @@ const Chat = () => {
     let message = text || messages[lastIndex].text;
     const utterance = new SpeechSynthesisUtterance(message);
     window.speechSynthesis.speak(utterance);
-  };
+  }; //endSpeack
 
   // Check if user is ready (name provided)
   if (!ready) {
@@ -233,7 +217,7 @@ const Chat = () => {
         <button type="submit">Save</button>
       </form>
     );
-  }
+  } //endIfReady
 
   return (
     <>
@@ -270,15 +254,8 @@ const Chat = () => {
               </div>
               <div className="message-body">
                 {/* Render Markdown content */}
-                {!isStream ? (
-                  <MarkdownRenderer content={msg.text} />
-                ) : (
-                  <Markdown
-                    children={msg.text}
-                    remarkPlugins={[remarkGfm]}
-                    components={renderers}
-                  />
-                )}
+                <MarkdownRenderer content={msg.text} />
+                {/* <Markdown children={msg.text} remarkPlugins={[remarkGfm]} components={renderers} /> */}
               </div>
             </div>
           ))}
