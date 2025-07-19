@@ -63,8 +63,3 @@ coverage
 
 **/bk-*
 **/bk_*
-/models
-*.http
-bobby-1.md 
-#yarn*.lock
-*.lock*

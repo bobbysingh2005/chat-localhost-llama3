@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { AppSetting } from "./App-setting";
-//eslint-disable-next-line
+import { Link } from "react-router-dom";
+
 function MainHeader({ user, ...rest }) {
   const {
     modelList,
@@ -27,6 +28,9 @@ function MainHeader({ user, ...rest }) {
       <header className="bg-light py-3">
         <div className="row">
           <div className="col">
+<Link to={`/`} >Home</Link>
+          </div>
+          <div className="col">
             <h1>Hi {user ? user : ""}, Chat with me!</h1>
           </div>
           <div className="col-">
@@ -44,7 +48,10 @@ function MainHeader({ user, ...rest }) {
           </div>
           <div className="col">
             <button onClick={getListOfModels}>Refresh</button>
-            <button type="button" onClick={()=>updateStream(stream => !isStream)}>
+            <button
+              type="button"
+              onClick={() => updateStream((stream) => !isStream)}
+            >
               Stream {isStream ? "On" : "Off"}
             </button>
           </div>

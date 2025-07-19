@@ -1,12 +1,9 @@
 {
 	"folders": [
-		{
-			"name": "main",
-			"path": "."
-		},{
-			"name": "app",
-			"path": "./src"
-		}
+		{ "name": "main", "path": "." },
+		{ "name": "frontend", "path": "./frontend" },
+		{ "name": "backend", "path": "./backend" },
+		{ "name": "nginx", "path": "./nginx" }
 	],
 	"settings": {}
 }

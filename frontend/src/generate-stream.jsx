@@ -6,7 +6,7 @@ import Loader from "./components/loader";
 import MainHeader from "./main-header";
 import MainFooter from "./main-footer";
 import { AppSetting } from "./App-setting";
-import './assets/style.css';
+import "./assets/style.css";
 
 const Chat = () => {
   const [message, setMessage] = useState("");
@@ -37,7 +37,8 @@ const Chat = () => {
         }),
       });
 
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
@@ -131,7 +132,8 @@ const Chat = () => {
 
   // Copy code to clipboard
   const copyCode = (code) => {
-    navigator.clipboard.writeText(code)
+    navigator.clipboard
+      .writeText(code)
       .then(() => alert("Code copied to clipboard!"))
       .catch((err) => console.error("Failed to copy code: ", err));
   };
@@ -158,16 +160,20 @@ const Chat = () => {
 
   return (
     <>
-      <MainHeader user={user} currentModelName={currentModel} />
-
-      <main className="container my-5">
-        <div className="chat-box bg-light p-4 rounded-3" role="log" aria-label="Chat messages">
+    <h2>Chat</h2>
+      <div className="container my-5">
+        <div
+          className="chat-box bg-light p-4 rounded-3"
+          role="log"
+          aria-label="Chat messages"
+        >
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={`message mb-3 p-3 rounded-3 ${msg.name === user
-                ? "bg-primary text-white ms-auto"
-                : "bg-secondary text-dark"
+              className={`message mb-3 p-3 rounded-3 ${
+                msg.name === user
+                  ? "bg-primary text-white ms-auto"
+                  : "bg-secondary text-dark"
               }`}
             >
               <div className="message-header d-flex justify-content-between align-items-center">
@@ -197,9 +203,11 @@ const Chat = () => {
                           </button>
                         </div>
                       ) : (
-                        <code className={className} {...props}>{code}</code>
+                        <code className={className} {...props}>
+                          {code}
+                        </code>
                       );
-                    }
+                    },
                   }}
                 >
                   {msg.text}
@@ -221,7 +229,9 @@ const Chat = () => {
               rows={2}
               aria-label="Type a message"
             />
-            <button type="submit" className="btn btn-primary">Send</button>
+            <button type="submit" className="btn btn-primary">
+              Send
+            </button>
             <button
               type="button"
               className="btn btn-info ms-2"
@@ -233,15 +243,13 @@ const Chat = () => {
             </button>
           </form>
         </div>
-      </main>
+      </div>
 
       {error && (
         <div className="alert alert-danger mt-3" role="alert">
           <pre>{error}</pre>
         </div>
       )}
-
-      <MainFooter />
     </>
   );
 };
