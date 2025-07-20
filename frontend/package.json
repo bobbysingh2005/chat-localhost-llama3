@@ -38,6 +38,7 @@
     "bootstrap": "^5.3.5",
     "dayjs": "^1.11.13",
     "font-awesome": "^4.7.0",
+    "formik": "^2.4.6",
     "lodash": "^4.17.21",
     "marked": "^15.0.8",
     "react": "^19.1.0",
@@ -47,7 +48,8 @@
     "react-router-dom": "^7.5.0",
     "rehype-highlight": "^7.0.2",
     "rehype-sanitize": "^6.0.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@types/react": "latest",

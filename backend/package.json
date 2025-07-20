@@ -9,12 +9,14 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "latest",
-    "@fastify/jwt": "latest",
+    "@fastify/jwt": "^9.1.0",
     "@types/mongoose": "latest",
     "bcrypt": "latest",
     "dotenv": "latest",
     "fastify": "latest",
+    "fastify-cookie": "^5.6.1",
     "mongoose": "latest"
   },
   "devDependencies": {

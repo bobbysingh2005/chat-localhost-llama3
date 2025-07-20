@@ -39,7 +39,7 @@ export default defineConfig({
     // sourcemap: true, // You can set this to 'false' to remove source maps from the build
 
     // You can also define the target environment (default is 'modules')
-    // target: "esnext", // Ensure better modern browser support
+    target: "esnext", // Ensure better modern browser support
 
     // Rollup options, which Vite uses under the hood for bundling
     // rollupOptions: {

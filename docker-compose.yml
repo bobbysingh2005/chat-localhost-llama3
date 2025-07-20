@@ -29,15 +29,6 @@ services:
     environment:
       - NODE_ENV=production
 
-  frontend:
-    container_name: frontend
-    build:
-      context: ./frontend
-    volumes:
-      - frontend_build:/app/dist
-    networks:
-      - llama_net
-
   ollama:
     container_name: ollama
     image: ollama/ollama:rocm
@@ -63,8 +54,10 @@ services:
     container_name: voskSTT
     image: alphacep/kaldi-en
     restart: always
+    ports:
+      - "2700:2700"  # Expose the port to the host
     expose:
-      - "2700"
+      - "2700"  # Expose to other containers on the same network
     networks:
       - llama_net
 
@@ -75,10 +68,9 @@ services:
     ports:
       - "8000:80"
     volumes:
-      - frontend_build:/usr/share/nginx/html:ro
+      - ./frontend/dist:/usr/share/nginx/html:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - frontend
       - backend
       - ollama
       - stt
@@ -87,7 +79,6 @@ services:
 
 volumes:
   mongo_data:
-  frontend_build:
 
 networks:
   llama_net:
