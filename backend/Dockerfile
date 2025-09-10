@@ -27,11 +27,13 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 # Copy only what's needed for running the app
-COPY package*.json ./
+COPY package.json ./
 RUN npm install --production
 
 # Copy the compiled output from the build stage
 COPY --from=builder /app/dist ./dist
+# Copy package.json into dist for runtime version access
+COPY package.json ./dist/
 
 # Optional: copy env files or configs if needed at runtime
 # COPY .env .env

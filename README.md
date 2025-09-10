@@ -1,45 +1,79 @@
-# React Chat App with Dockerized Ollama
+# Chat Localhost Llama3
 
-## Overview
+Self-hosted chat application using Ollama for LLM inference, Fastify backend, and React frontend.
 
-This project demonstrates a robust and efficient AI-powered chat application, seamlessly integrating a React frontend with a Dockerized Ollama backend. The application features a user-friendly interface and a powerful REST API, all encapsulated within Docker containers to ensure a smooth deployment experience and consistent runtime environment.
+Core features implemented
+- Fastify backend with user auth and conversation storage (MongoDB)
+- Backend proxy to Ollama (`POST /api/generate`)
+- React frontend with unified Chat/Generate UI and Guest mode
+- Docker Compose configuration for local development
 
-### Key Features
+## Environment & configuration
 
-- **Docker Integration**: Streamline deployment and management with Docker, creating isolated and reproducible environments.
-- **AI-Powered Backend**: Utilize the latest Ollama Docker image for enhanced AI chat capabilities.
-- **React Frontend**: Leverage React’s component-based architecture and virtual DOM for a dynamic and scalable user interface.
+Copy `.env.example` to `.env` and set values for each environment. Key variables:
 
-## Technologies Used
+- `PORT` — backend port (default 3000)
+- `NODE_ENV` — development|staging|production
+- `SECRET_KEY` — JWT secret
+- `MONGO_URL` — MongoDB connection string
+- `OLLAMA_HOST` — Ollama host (e.g. http://localhost:11434)
 
-- **React**: A popular JavaScript library for building user interfaces, known for its performance and flexibility.
-- **Docker**: An open-source platform for automating containerized applications, simplifying deployment, scaling, and management.
-- **Ollama**: A pre-built Docker image optimized for AI-driven chat applications.
+## Run (development)
 
-## Benefits
+1. Install frontend/backend deps (optional if using Docker):
 
-By combining Docker and React, this project achieves:
-- **Hassle-Free Deployment**: Easily deploy the application without worrying about dependency conflicts.
-- **Isolated Environments**: Run different versions and configurations of the application independently.
-- **Scalability and Performance**: Efficiently handle increased loads and ensure a responsive user experience.
-- **User-Friendly Interface**: Provide an intuitive and engaging frontend for end-users.
+```powershell
+cd frontend
+npm install
 
-## Getting Started
+cd ..\backend
+npm install
+```
 
-Follow these steps to set up the project on your local machine:
+2. Start services with Docker Compose (recommended):
 
-### Prerequisites
-
-Ensure Docker is installed on your system. If not, refer to the [official Docker installation guide](https://docs.docker.com/get-docker/) for instructions specific to your operating system.
-
-### Setup Instructions
-
-1. **Clone the Repository**
-Open a terminal or command prompt and navigate to your desired directory. Then, clone the repository:
-```bash
-mkdir my-chat-app
-cd my-chat-app
+```powershell
+# from repo root
 git clone https://github.com/bobbysingh2005/chat-localhost-llama3.git my-chat
+```
+
+3. Frontend dev server (optional):
+
+```powershell
+cd frontend
+npm run dev
+```
+
+4. Backend local run (optional):
+
+```powershell
+cd backend
+npm run dev
+```
+
+## API routes
+
+- Auth: `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`, `GET /auth/me`
+- LLM: `POST /api/generate` (backend proxies to Ollama `/v1/generate`)
+- Conversations: `POST /conversations`, `GET /conversations`, `GET /conversations/:id`, `PUT /conversations/:id`, `DELETE /conversations/:id`
+
+## Guest mode & accessibility
+
+- "Continue as Guest" allows anonymous usage; guest conversations are saved to `localStorage` under `guest_conversation`.
+- Chat/Generate UI includes `aria-live` announcements and focus management for screen reader accessibility.
+
+## Usage
+
+After login, you are redirected to the unified chat/generate interface where you can chat or generate as you wish.
+
+## Testing & next steps
+
+Planned items:
+- Add backend tests (vitest/jest + supertest) and frontend tests (vitest + testing-library)
+- Add CI (GitHub Actions) to run tests and lint
+- Accessibility audit and keyboard navigation improvements
+
+If you want, I'll implement tests next and finish a developer guide with detailed API docs.
 cd my-chat
 ```
 

@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./dump:/dump
+      - mongo:/data/db
+
+    networks:
+      - llamanet
+
+  ollama:
+    container_name: ollama
+    image: ollama/ollama:rocm
+    restart: always
+    ports:
+      - "11434:11434"
+    shm_size: 20gb
+    mem_limit: 20gb
+    cpus: '12'
+    environment:
+      - OLLAMA_ORIGINS=*
+      - OLLAMA_HOST=0.0.0.0:11434
+      - GPU=all
+      - DEVICE_DRIVER=ryzen
+      - OLLAMA_CPPFLAGS=-DCUDA_ARCH_BIN=70 -DCUDA_ARCH_PTX=70 -DHLSL_TARGET=sm70
+      - OLLAMA_LDFLAGS=-lrocm_device
+    volumes:
+      - ./models:/root/.ollama
+    networks:
+      - llamanet
+
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile-dev
+    restart: always
+    depends_on:
+      - mongo
+      - ollama
+    ports:
+      - "3000:3000"
+    networks:
+      - llamanet
+    environment:
+      NODE_ENV: development
+      MONGO_URL: mongodb://mongo:27017/chatApp
+      OLLAMA_HOST: http://ollama:11434
+    volumes:
+      - ./backend:/app
+      - backend_nodemodules:/app/node_modules
+
+networks:
+  llamanet:
+    driver: bridge
+
+volumes:
+  mongo:
+  backend_nodemodules:

@@ -3,7 +3,8 @@
 		{ "name": "main", "path": "." },
 		{ "name": "frontend", "path": "./frontend" },
 		{ "name": "backend", "path": "./backend" },
-		{ "name": "nginx", "path": "./nginx" }
+		{ "name": "nginx", "path": "./nginx" },
+		{ "name": "liveChat", "path": "./liveChat" }
 	],
 	"settings": {}
 }

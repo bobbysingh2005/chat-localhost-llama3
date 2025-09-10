@@ -1,10 +1,22 @@
 {
   "name": "chat-app",
-  "private": true,
   "version": "1.0.2",
+  "private": true,
   "description": "this simple react app to access llama3 module by ollama rest api.",
+  "type": "module",
+  "main": "index.js",
+  "workspaces":[
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "start:api": "docker compose up -d api",
+    "start:app": "docker compose up -d app",
+    "start": "docker compose up -d",
+    "start:backend": "cd backend && yarn dev",
+    "start:frontend": "cd frontend && yarn dev"
+  },
   "keywords": [
-    "llama3",
     "reactJs",
     "personal",
     "chat",
@@ -16,48 +28,14 @@
     "chatApi",
     "chatApp"
   ],
-  "type": "module",
-  "author": "bobby singh <bobbysingh2005@gmail.com>",
+  "homepage": "https://github.com/bobbysingh2005/chat-localhost-llama3#readme",
+  "bugs": {
+    "url": "https://github.com/bobbysingh2005/chat-localhost-llama3/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bobbysingh2005/chat-localhost-llama3.git"
+  },
   "license": "MIT",
-  "scripts": {
-    "start:api": "docker compose up -d api",
-    "start:app": "docker compose up -d app",
-    "start": "docker compose up -d",
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.7.2",
-    "@fortawesome/free-brands-svg-icons": "^6.7.2",
-    "@fortawesome/free-regular-svg-icons": "^6.7.2",
-    "@fortawesome/free-solid-svg-icons": "^6.7.2",
-    "@fortawesome/react-fontawesome": "^0.2.2",
-    "@popperjs/core": "^2.11.8",
-    "bootstrap": "^5.3.5",
-    "dayjs": "^1.11.13",
-    "font-awesome": "^4.7.0",
-    "lodash": "^4.17.21",
-    "marked": "^15.0.8",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "react-fontawesome": "^1.7.1",
-    "react-markdown": "^9.1.0",
-    "react-router-dom": "^7.5.0",
-    "rehype-highlight": "^7.0.2",
-    "rehype-sanitize": "^6.0.0",
-    "remark-gfm": "^4.0.1"
-  },
-  "devDependencies": {
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
-    "@vitejs/plugin-react-swc": "latest",
-    "eslint": "latest",
-    "eslint-plugin-react": "latest",
-    "eslint-plugin-react-hooks": "latest",
-    "eslint-plugin-react-refresh": "latest",
-    "terser": "^5.39.0",
-    "vite": "latest"
-  }
+  "author": "bobby singh <bobbysingh2005@gmail.com>"
 }

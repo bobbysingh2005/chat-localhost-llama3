@@ -1,5 +1,5 @@
 {
-  "name": "fastify-backend",
+  "name": "backend",
   "version": "1.0.0",
   "type": "commonjs",
   "main": "dist/index.js",
@@ -25,5 +25,9 @@
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
-  }
+  },
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

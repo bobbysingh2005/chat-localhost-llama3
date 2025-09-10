@@ -8,7 +8,8 @@ import "bootstrap/dist/js/bootstrap.bundle.js";
 import 'font-awesome/css/font-awesome.min.css';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-library.add(() => import('@fortawesome/free-solid-svg-icons'));
+import { fas } from '@fortawesome/free-solid-svg-icons';
+library.add(fas);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

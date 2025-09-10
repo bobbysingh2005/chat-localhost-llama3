@@ -1,0 +1,12 @@
+# Development Dockerfile for backend
+FROM node:20 AS dev
+WORKDIR /app
+
+COPY package*.json tsconfig.json ./
+RUN npm install
+
+COPY ./types ./types
+COPY ./src ./src
+
+EXPOSE 3000
+CMD ["npm", "run", "dev"]

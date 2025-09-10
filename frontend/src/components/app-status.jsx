@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { AppSetting } from '../views/App-setting';
 
 const ApiHealthChecker = () => {
+  const { apiUrl } = useContext(AppSetting);
   const [isOnline, setIsOnline] = useState(null); // null means "checking..."
   const [showSpinner, setShowSpinner] = useState(false);
 
@@ -19,7 +21,8 @@ const ApiHealthChecker = () => {
       }
 
       try {
-        const response = await fetch('http://localhost:3000/health', {
+        const base = apiUrl || 'http://localhost:3000';
+        const response = await fetch(`${base}/health`, {
           method: 'GET',
           cache: 'no-cache',
         });
@@ -31,10 +34,10 @@ const ApiHealthChecker = () => {
     };
 
     checkApiHealth();
-    const intervalId = setInterval(checkApiHealth, 500);
+    const intervalId = setInterval(checkApiHealth, 60000);
 
     return () => clearInterval(intervalId);
-  }, []);
+  }, [apiUrl]);
 
   // Accessible status text for screen readers
   const statusText =

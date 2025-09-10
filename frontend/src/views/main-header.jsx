@@ -21,11 +21,14 @@ function MainHeader() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    let mounted = true;
+
     const fetchModels = async () => {
       try {
-        const response = await fetch(`${apiUrl}/api/tags`);
+        const response = await fetch(`${apiUrl}/api/tags`, { credentials: 'include' });
         const data = await response.json();
-        if (Array.isArray(data.models)) {
+        if (!mounted) return;
+        if (Array.isArray(data.models) && data.models.length > 0) {
           updateList(data.models);
         }
       } catch (error) {
@@ -33,11 +36,24 @@ function MainHeader() {
       }
     };
 
+    // Fetch on mount
     fetchModels();
+
+    // Refetch when window/tab gains focus (useful if backend or Ollama wasn't ready at first)
+    const onFocus = () => {
+      fetchModels();
+    };
+    window.addEventListener('focus', onFocus);
+
+    return () => {
+      mounted = false;
+      window.removeEventListener('focus', onFocus);
+    };
   }, [apiUrl, updateList]);
 
   const handleLogout = () => {
-    setUser(null);
+    setUser({});
+    try { localStorage.removeItem('user'); } catch (e) { }
     navigate("/");
   };
 
@@ -46,11 +62,6 @@ function MainHeader() {
       <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div className="d-flex gap-3 align-items-center flex-wrap">
           <Link to="/" className="text-dark fw-bold fs-4 text-decoration-none">ChatApp</Link>
-          <nav className="d-flex gap-3">
-            <Link to="/" className="text-decoration-none">Home</Link>
-            <Link to="/chat" className="text-decoration-none">Chat</Link>
-            <Link to="/generate" className="text-decoration-none">Generate</Link>
-          </nav>
         </div>
 
         <div className="text-center my-2 flex-grow-1">
@@ -69,11 +80,15 @@ function MainHeader() {
               value={currentModel}
               className="form-select form-select-sm"
             >
-              {modelList.map(({ name, model }, i) => (
-                <option key={i} value={model}>
-                  {name.split(":")[0]}
-                </option>
-              ))}
+              {(!modelList || modelList.length === 0) ? (
+                <option disabled value="">{`Loading models...`}</option>
+              ) : (
+                modelList.map(({ name, model }, i) => (
+                  <option key={i} value={model}>
+                    {String(name).split(":")[0]}
+                  </option>
+                ))
+              )}
             </select>
           </div>
 

@@ -13,10 +13,7 @@ export default function Home() {
     <>
       <h1>Home</h1>
 
-      <button type="button" onClick={() => nav("/tts")}>TextToSpeach</button>
-      <button type="button" onClick={() => nav("/stt")}>SpeachToText</button>
-      <button type="button" onClick={() => nav("/chat")}>Chat</button>
-      <button type="button" onClick={() => nav("/generate")}>Generate</button>
+  <button type="button" onClick={() => nav("/chat")}>Start Chat / Generate</button>
     </>
   );
 }
