@@ -1,3 +1,27 @@
+# Code Quality & Linting
+
+This project enforces strict code quality and maintainability:
+- All code is linted and auto-formatted using ESLint and Prettier
+- Frontend: JavaScript/React (ESLint, Prettier, PropTypes)
+- Backend: TypeScript (ESLint, Prettier, @typescript-eslint)
+- All methods and variables should have meaningful comments
+- No unused variables or functions in production code
+- Code is reviewed for readability, maintainability, and accessibility
+
+## Linting & Formatting Commands
+```bash
+# Frontend
+cd frontend
+npx eslint src/**/*.jsx --fix
+npx prettier --write .
+
+# Backend
+cd backend
+npx eslint src/**/*.ts --fix
+npx prettier --write .
+```
+
+All contributions must follow these standards for acceptance.
 # Documentation Guide
 
 ## Quick Reference

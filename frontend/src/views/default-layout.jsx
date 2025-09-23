@@ -11,36 +11,55 @@ import ApiHealthChecker from "../components/app-status";
 import AuthForm from "./auth";
 import Conversations from "./conversations";
 import { AppSetting } from "./App-setting";
-import { useState } from 'react';
-import LoginModal from '../components/LoginModal';
+import { useState } from "react";
+import LoginModal from "../components/LoginModal";
 
 function DefaultLayout() {
   const { user, currentModel, setUser } = useContext(AppSetting);
 
   const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(!user || Object.keys(user || {}).length === 0);
+  const [showModal, setShowModal] = useState(
+    !user || Object.keys(user || {}).length === 0,
+  );
 
   const handleGuest = () => {
-    setUser({ guest: true, username: 'Guest' });
-    try { localStorage.setItem('user', JSON.stringify({ guest: true, username: 'Guest' })); } catch(e) {}
+    setUser({ guest: true, username: "Guest" });
+    try {
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ guest: true, username: "Guest" }),
+      );
+    } catch (e) {}
     setShowModal(false);
-    navigate('/chat');
+    navigate("/chat");
   };
 
   const openLogin = () => {
     // show inline auth form by navigating to / or showing AuthForm area.
     setShowModal(false);
-    navigate('/auth');
+    navigate("/auth");
   };
 
   const openRegister = () => {
     setShowModal(false);
-    navigate('/auth');
+    navigate("/auth");
   };
 
   return (
     <>
-  <LoginModal open={showModal} onClose={() => setShowModal(false)} onGuest={handleGuest} onOpenLogin={() => { setShowModal(false); navigate('/auth'); }} onOpenRegister={() => { setShowModal(false); navigate('/auth'); }} />
+      <LoginModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onGuest={handleGuest}
+        onOpenLogin={() => {
+          setShowModal(false);
+          navigate("/auth");
+        }}
+        onOpenRegister={() => {
+          setShowModal(false);
+          navigate("/auth");
+        }}
+      />
       <MainHeader currentModelName={currentModel} />
 
       <main>

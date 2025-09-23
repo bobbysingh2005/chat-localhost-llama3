@@ -1,5 +1,6 @@
 // Sound feedback for user and AI
-const bellSound = typeof window !== 'undefined' ? new window.Audio('/sounds/bell-1.mp3') : null;
+const bellSound =
+  typeof window !== "undefined" ? new window.Audio("/sounds/bell-1.mp3") : null;
 
 // =============================
 // TODO: FUTURE PRODUCTION UPGRADE
@@ -21,36 +22,35 @@ import { AppSetting } from "./App-setting";
 
 import STTButton from "../components/STTButton";
 
-
-
-
-function CopyableCodeBlock({ children, className = '', ...props }) {
+function CopyableCodeBlock({ children, className = "", ...props }) {
   const text = Array.isArray(children) ? children.join("") : children;
   const [isCopied, setIsCopied] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(text);
   const [ariaMsg, setAriaMsg] = useState("");
-  let lang = '';
-  if (className && className.startsWith('language-')) {
-    lang = className.replace('language-', '');
+  let lang = "";
+  if (className && className.startsWith("language-")) {
+    lang = className.replace("language-", "");
   }
   return (
     <div style={{ position: "relative", marginBottom: 16 }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        background: '#f5f7fa',
-        borderTopLeftRadius: 6,
-        borderTopRightRadius: 6,
-        border: '1px solid #e0e0e0',
-        borderBottom: 'none',
-        padding: '0.3rem 0.8rem',
-        fontSize: '0.97rem',
-        fontFamily: 'monospace',
-        color: '#4f8cff',
-      }}>
-        <span style={{ fontWeight: 600 }}>{lang || 'code'}</span>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          background: "#f5f7fa",
+          borderTopLeftRadius: 6,
+          borderTopRightRadius: 6,
+          border: "1px solid #e0e0e0",
+          borderBottom: "none",
+          padding: "0.3rem 0.8rem",
+          fontSize: "0.97rem",
+          fontFamily: "monospace",
+          color: "#4f8cff",
+        }}
+      >
+        <span style={{ fontWeight: 600 }}>{lang || "code"}</span>
         <span>
           <button
             type="button"
@@ -71,7 +71,8 @@ function CopyableCodeBlock({ children, className = '', ...props }) {
                 await navigator.clipboard.writeText(text);
                 setIsCopied(true);
                 setTimeout(() => setIsCopied(false), 1200);
-                if (setScreenReaderMessage) setScreenReaderMessage("Code copied to clipboard");
+                if (setScreenReaderMessage)
+                  setScreenReaderMessage("Code copied to clipboard");
               } catch {}
             }}
           >
@@ -92,7 +93,8 @@ function CopyableCodeBlock({ children, className = '', ...props }) {
             }}
             onClick={() => {
               setIsEditing(true);
-              if (setScreenReaderMessage) setScreenReaderMessage("Code editor opened");
+              if (setScreenReaderMessage)
+                setScreenReaderMessage("Code editor opened");
             }}
             disabled={isEditing}
           >
@@ -104,9 +106,11 @@ function CopyableCodeBlock({ children, className = '', ...props }) {
         <MonacoEditorWrapper
           value={editValue}
           language={lang}
-          onChange={v => setEditValue(v)}
+          onChange={(v) => setEditValue(v)}
           onCancel={() => setIsEditing(false)}
-          onSave={() => { setIsEditing(false); }}
+          onSave={() => {
+            setIsEditing(false);
+          }}
         />
       ) : (
         <pre
@@ -116,8 +120,8 @@ function CopyableCodeBlock({ children, className = '', ...props }) {
             padding: 12,
             borderBottomLeftRadius: 6,
             borderBottomRightRadius: 6,
-            border: '1px solid #e0e0e0',
-            borderTop: 'none',
+            border: "1px solid #e0e0e0",
+            borderTop: "none",
             overflowX: "auto",
             fontFamily: "monospace",
             margin: 0,
@@ -130,54 +134,69 @@ function CopyableCodeBlock({ children, className = '', ...props }) {
   );
 }
 
-
 // Helper: Render a file/code block with filename heading
 function FileCodeBlock({ filename, code, language }) {
   return (
     <div style={{ marginBottom: 24 }}>
       {filename && (
-        <div style={{
-          background: '#f5f7fa',
-          borderTopLeftRadius: 6,
-          borderTopRightRadius: 6,
-          border: '1px solid #e0e0e0',
-          borderBottom: 'none',
-          padding: '0.3rem 0.8rem',
-          fontSize: '0.97rem',
-          fontFamily: 'monospace',
-          color: '#4f8cff',
-          fontWeight: 600,
-        }}>{filename}</div>
+        <div
+          style={{
+            background: "#f5f7fa",
+            borderTopLeftRadius: 6,
+            borderTopRightRadius: 6,
+            border: "1px solid #e0e0e0",
+            borderBottom: "none",
+            padding: "0.3rem 0.8rem",
+            fontSize: "0.97rem",
+            fontFamily: "monospace",
+            color: "#4f8cff",
+            fontWeight: 600,
+          }}
+        >
+          {filename}
+        </div>
       )}
-      <CopyableCodeBlock className={language ? `language-${language}` : ''}>{code}</CopyableCodeBlock>
+      <CopyableCodeBlock className={language ? `language-${language}` : ""}>
+        {code}
+      </CopyableCodeBlock>
     </div>
   );
 }
 
-
 // Recursively render any AI response as readable blocks (code, files, markdown, text)
 // Improved MarkdownRenderer: adds line breaks and restores copy/edit for all code blocks
 function MarkdownRenderer({ content }) {
-  function renderAny(val, keyPrefix = '', isTopLevel = true) {
-    if (typeof val === 'string') {
+  function renderAny(val, keyPrefix = "", isTopLevel = true) {
+    if (typeof val === "string") {
       // Split summary/explanation from code blocks for clarity
       const parts = val.split(/(```[\s\S]*?```)/g);
       return (
         <div key={keyPrefix}>
           {parts.map((part, idx) => {
-            if (part.startsWith('```')) {
+            if (part.startsWith("```")) {
               // Extract language and code
               const match = part.match(/^```(\w+)?\n([\s\S]*?)```$/);
-              const lang = match ? match[1] || '' : '';
-              const code = match ? match[2] : part.replace(/^```|```$/g, '');
+              const lang = match ? match[1] || "" : "";
+              const code = match ? match[2] : part.replace(/^```|```$/g, "");
               return (
-                <div key={idx} style={{ margin: '16px 0' }}>
-                  <CopyableCodeBlock className={lang ? `language-${lang}` : ''}>{code}</CopyableCodeBlock>
+                <div key={idx} style={{ margin: "16px 0" }}>
+                  <CopyableCodeBlock className={lang ? `language-${lang}` : ""}>
+                    {code}
+                  </CopyableCodeBlock>
                 </div>
               );
             } else if (part.trim()) {
               // Summary/explanation: add margin below
-              return <div key={idx} style={{ marginBottom: 12 }}><ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>{part}</ReactMarkdown></div>;
+              return (
+                <div key={idx} style={{ marginBottom: 12 }}>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeHighlight]}
+                  >
+                    {part}
+                  </ReactMarkdown>
+                </div>
+              );
             } else {
               return null;
             }
@@ -186,21 +205,31 @@ function MarkdownRenderer({ content }) {
       );
     }
     if (Array.isArray(val)) {
-      return val.map((item, idx) => renderAny(item, keyPrefix + '-' + idx, false));
+      return val.map((item, idx) =>
+        renderAny(item, keyPrefix + "-" + idx, false),
+      );
     }
-    if (val && typeof val === 'object') {
+    if (val && typeof val === "object") {
       // If object looks like a file/code block
-      const filename = val.filename || val.name || val.file || '';
-      const code = val.code || val.content || val.text || '';
-      const language = val.language || val.lang || '';
+      const filename = val.filename || val.name || val.file || "";
+      const code = val.code || val.content || val.text || "";
+      const language = val.language || val.lang || "";
       if (filename && code) {
-        return <div key={keyPrefix + filename} style={{ margin: '16px 0' }}><FileCodeBlock filename={filename} code={code} language={language} /></div>;
+        return (
+          <div key={keyPrefix + filename} style={{ margin: "16px 0" }}>
+            <FileCodeBlock
+              filename={filename}
+              code={code}
+              language={language}
+            />
+          </div>
+        );
       }
       // If object has multiple keys, render each
       return Object.entries(val).map(([k, v], idx) => (
-        <div key={keyPrefix + '-' + k}>
+        <div key={keyPrefix + "-" + k}>
           {filename || language ? null : <strong>{k}:</strong>}
-          {renderAny(v, keyPrefix + '-' + k, false)}
+          {renderAny(v, keyPrefix + "-" + k, false)}
         </div>
       ));
     }
@@ -217,10 +246,15 @@ const ChatApp = () => {
   const recognitionRef = useRef(null);
   // Helper: Start browser STT and auto-send to AI
   const startVoiceRecognition = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      setScreenReaderMessage("Speech Recognition is not supported in this browser.");
-      alert("Speech Recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.");
+      setScreenReaderMessage(
+        "Speech Recognition is not supported in this browser.",
+      );
+      alert(
+        "Speech Recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.",
+      );
       return;
     }
     try {
@@ -239,8 +273,10 @@ const ChatApp = () => {
       recognition.onerror = (e) => {
         setListening(false);
         setScreenReaderMessage("Speech recognition error");
-        if (e.error === 'not-allowed') {
-          alert('Microphone access denied. Please allow microphone permissions.');
+        if (e.error === "not-allowed") {
+          alert(
+            "Microphone access denied. Please allow microphone permissions.",
+          );
         }
       };
       recognition.onend = () => setListening(false);
@@ -249,28 +285,42 @@ const ChatApp = () => {
       recognition.start();
     } catch (err) {
       setListening(false);
-      setScreenReaderMessage('Speech Recognition failed to start.');
+      setScreenReaderMessage("Speech Recognition failed to start.");
     }
   };
 
   // Helper: Speak text using browser TTS
   const speakText = (text, onEnd) => {
     if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
-      setScreenReaderMessage('Text-to-Speech is not supported in this browser.');
-      alert('Text-to-Speech is not supported in this browser. Please use Google Chrome or Microsoft Edge.');
+      setScreenReaderMessage(
+        "Text-to-Speech is not supported in this browser.",
+      );
+      alert(
+        "Text-to-Speech is not supported in this browser. Please use Google Chrome or Microsoft Edge.",
+      );
       if (onEnd) onEnd();
       return;
     }
     try {
       const utterance = new window.SpeechSynthesisUtterance(text);
-      utterance.onend = () => { if (onEnd) onEnd(); };
-      utterance.onerror = () => { if (onEnd) onEnd(); };
+      utterance.onend = () => {
+        if (onEnd) onEnd();
+      };
+      utterance.onerror = () => {
+        if (onEnd) onEnd();
+      };
       window.speechSynthesis.speak(utterance);
     } catch (err) {
       if (onEnd) onEnd();
     }
   };
-  const { currentModel, apiUrl, isStream, systemTemplate, user: contextUser } = useContext(AppSetting);
+  const {
+    currentModel,
+    apiUrl,
+    isStream,
+    systemTemplate,
+    user: contextUser,
+  } = useContext(AppSetting);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -287,7 +337,9 @@ const ChatApp = () => {
   const endOfMessagesRef = useRef(null);
   const errorRef = useRef(null);
   const systemRef = useRef(null);
-  const [user, setUser] = useState(contextUser || localStorage.getItem("user") || "");
+  const [user, setUser] = useState(
+    contextUser || localStorage.getItem("user") || "",
+  );
   // Fetch conversation list on mount (if logged in)
   useEffect(() => {
     if (!user || !user._id) return;
@@ -298,7 +350,9 @@ const ChatApp = () => {
   const fetchConversations = async () => {
     setConvLoading(true);
     try {
-      const res = await fetch(`${apiUrl.replace(/\/$/, "")}/conversations`, { credentials: 'include' });
+      const res = await fetch(`${apiUrl.replace(/\/$/, "")}/conversations`, {
+        credentials: "include",
+      });
       const json = await res.json();
       if (json?.success) setConversations(json.conversations || []);
     } catch {}
@@ -310,10 +364,18 @@ const ChatApp = () => {
     setLoading(true);
     setCurrentConvId(id);
     try {
-      const res = await fetch(`${apiUrl.replace(/\/$/, "")}/conversations/${id}`, { credentials: 'include' });
+      const res = await fetch(
+        `${apiUrl.replace(/\/$/, "")}/conversations/${id}`,
+        { credentials: "include" },
+      );
       const json = await res.json();
       if (json?.success) {
-        setMessages(json.conversation.messages.map(m => ({ role: m.sender === 'user' ? 'user' : 'assistant', content: m.text })));
+        setMessages(
+          json.conversation.messages.map((m) => ({
+            role: m.sender === "user" ? "user" : "assistant",
+            content: m.text,
+          })),
+        );
       }
     } catch {}
     setLoading(false);
@@ -329,10 +391,18 @@ const ChatApp = () => {
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
     // Announce new assistant message for screen readers
-    if (messages.length > 0 && messages[messages.length - 1].role === "assistant") {
-  setScreenReaderMessage("Assistant: " + messages[messages.length - 1].content.replace(/\s+/g, " ").slice(0, 200));
-  // Announce response is ready
-  setTimeout(() => setScreenReaderMessage("AI response is ready."), 500);
+    if (
+      messages.length > 0 &&
+      messages[messages.length - 1].role === "assistant"
+    ) {
+      setScreenReaderMessage(
+        "Assistant: " +
+          messages[messages.length - 1].content
+            .replace(/\s+/g, " ")
+            .slice(0, 200),
+      );
+      // Announce response is ready
+      setTimeout(() => setScreenReaderMessage("AI response is ready."), 500);
       // Focus the last assistant message
       lastAssistantMsgRef.current?.focus();
     }
@@ -364,9 +434,14 @@ const ChatApp = () => {
 
   // Overload handleSend: accepts optional text (for voice mode), else uses input
   const handleSend = async (textOverride) => {
-    const textToSend = typeof textOverride === 'string' ? textOverride : input;
+    const textToSend = typeof textOverride === "string" ? textOverride : input;
     // Play bell sound for user action (processing)
-    try { if (bellSound) { bellSound.currentTime = 0; bellSound.play(); } } catch {}
+    try {
+      if (bellSound) {
+        bellSound.currentTime = 0;
+        bellSound.play();
+      }
+    } catch {}
     if (!textToSend.trim()) return;
     setLoading(true);
     setError(null);
@@ -390,7 +465,8 @@ const ChatApp = () => {
           context,
         }),
       });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
       let result = "";
       if (isStream) {
         const reader = response.body.getReader();
@@ -423,22 +499,30 @@ const ChatApp = () => {
       }
       // Recursively extract all string content from result
       function extractStrings(val) {
-        if (typeof val === 'string') return val;
-        if (Array.isArray(val)) return val.map(extractStrings).join('\n');
-        if (val && typeof val === 'object') {
+        if (typeof val === "string") return val;
+        if (Array.isArray(val)) return val.map(extractStrings).join("\n");
+        if (val && typeof val === "object") {
           // Prefer 'text', 'content', or join all string values
           if (val.text) return extractStrings(val.text);
           if (val.content) return extractStrings(val.content);
-          return Object.values(val).map(extractStrings).join('\n');
+          return Object.values(val).map(extractStrings).join("\n");
         }
-        return '';
+        return "";
       }
       const aiContent = extractStrings(result);
-      updatedMessages = [...updatedMessages, { role: "assistant", content: aiContent }];
+      updatedMessages = [
+        ...updatedMessages,
+        { role: "assistant", content: aiContent },
+      ];
       setMessages(updatedMessages);
       setResponseTime(Date.now() - start);
       // Play bell sound for AI response
-      try { if (bellSound) { bellSound.currentTime = 0; bellSound.play(); } } catch {}
+      try {
+        if (bellSound) {
+          bellSound.currentTime = 0;
+          bellSound.play();
+        }
+      } catch {}
 
       // Speak AI response if in voice mode
       if (voiceMode && aiContent) {
@@ -452,15 +536,21 @@ const ChatApp = () => {
       if (user && user._id) {
         if (!currentConvId) {
           // Create new conversation
-          const convRes = await fetch(`${apiUrl.replace(/\/$/, "")}/conversations`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({
-              title: updatedMessages[0]?.content?.slice(0, 30) || 'New chat',
-              messages: updatedMessages.map(m => ({ sender: m.role === 'user' ? 'user' : 'assistant', text: m.content })),
-            }),
-          });
+          const convRes = await fetch(
+            `${apiUrl.replace(/\/$/, "")}/conversations`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({
+                title: updatedMessages[0]?.content?.slice(0, 30) || "New chat",
+                messages: updatedMessages.map((m) => ({
+                  sender: m.role === "user" ? "user" : "assistant",
+                  text: m.content,
+                })),
+              }),
+            },
+          );
           const convJson = await convRes.json();
           if (convJson?.success) {
             setCurrentConvId(convJson.conversation._id);
@@ -468,14 +558,20 @@ const ChatApp = () => {
           }
         } else {
           // Update existing conversation
-          await fetch(`${apiUrl.replace(/\/$/, "")}/conversations/${currentConvId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({
-              messages: updatedMessages.map(m => ({ sender: m.role === 'user' ? 'user' : 'assistant', text: m.content })),
-            }),
-          });
+          await fetch(
+            `${apiUrl.replace(/\/$/, "")}/conversations/${currentConvId}`,
+            {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({
+                messages: updatedMessages.map((m) => ({
+                  sender: m.role === "user" ? "user" : "assistant",
+                  text: m.content,
+                })),
+              }),
+            },
+          );
           fetchConversations();
         }
       }
@@ -502,24 +598,76 @@ const ChatApp = () => {
   }, [voiceMode]);
 
   return (
-    <div style={{ display: 'flex', height: '100%' }}>
+    <div style={{ display: "flex", height: "100%" }}>
       {/* Sidebar for conversation history */}
-      <aside style={{ width: sidebarOpen ? 240 : 0, transition: 'width 0.2s', background: '#f4f6fa', borderRight: '1px solid #e0e0e0', overflow: 'auto', minHeight: '100%' }}>
-        <div style={{ padding: '1rem', borderBottom: '1px solid #e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontWeight: 700, fontSize: '1.1rem' }}>Conversations</span>
-          <button onClick={handleNewChat} style={{ background: '#4f8cff', color: '#fff', border: 'none', borderRadius: 6, padding: '0.3rem 0.8rem', fontWeight: 600, cursor: 'pointer' }}>+ New Chat</button>
+      <aside
+        style={{
+          width: sidebarOpen ? 240 : 0,
+          transition: "width 0.2s",
+          background: "#f4f6fa",
+          borderRight: "1px solid #e0e0e0",
+          overflow: "auto",
+          minHeight: "100%",
+        }}
+      >
+        <div
+          style={{
+            padding: "1rem",
+            borderBottom: "1px solid #e0e0e0",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <span style={{ fontWeight: 700, fontSize: "1.1rem" }}>
+            Conversations
+          </span>
+          <button
+            onClick={handleNewChat}
+            style={{
+              background: "#4f8cff",
+              color: "#fff",
+              border: "none",
+              borderRadius: 6,
+              padding: "0.3rem 0.8rem",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            + New Chat
+          </button>
         </div>
-        {convLoading ? <div style={{ padding: '1rem' }}>Loading...</div> : null}
-        <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-          {conversations.map(conv => (
-            <li key={conv._id} style={{ borderBottom: '1px solid #e0e0e0', background: conv._id === currentConvId ? '#e6f0ff' : 'transparent' }}>
+        {convLoading ? <div style={{ padding: "1rem" }}>Loading...</div> : null}
+        <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+          {conversations.map((conv) => (
+            <li
+              key={conv._id}
+              style={{
+                borderBottom: "1px solid #e0e0e0",
+                background:
+                  conv._id === currentConvId ? "#e6f0ff" : "transparent",
+              }}
+            >
               <button
-                style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '0.8rem 1rem', fontSize: '1rem', cursor: 'pointer', fontWeight: conv._id === currentConvId ? 700 : 400 }}
+                style={{
+                  width: "100%",
+                  textAlign: "left",
+                  background: "none",
+                  border: "none",
+                  padding: "0.8rem 1rem",
+                  fontSize: "1rem",
+                  cursor: "pointer",
+                  fontWeight: conv._id === currentConvId ? 700 : 400,
+                }}
                 onClick={() => loadConversation(conv._id)}
-                aria-current={conv._id === currentConvId ? 'true' : undefined}
+                aria-current={conv._id === currentConvId ? "true" : undefined}
               >
-                {conv.title || 'Untitled'}
-                <div style={{ fontSize: '0.85rem', color: '#888', marginTop: 2 }}>{new Date(conv.updatedAt).toLocaleString()}</div>
+                {conv.title || "Untitled"}
+                <div
+                  style={{ fontSize: "0.85rem", color: "#888", marginTop: 2 }}
+                >
+                  {new Date(conv.updatedAt).toLocaleString()}
+                </div>
               </button>
             </li>
           ))}
@@ -532,7 +680,13 @@ const ChatApp = () => {
           ref={liveRegionRef}
           aria-live="polite"
           aria-atomic="true"
-          style={{ position: "absolute", left: "-9999px", height: 1, width: 1, overflow: "hidden" }}
+          style={{
+            position: "absolute",
+            left: "-9999px",
+            height: 1,
+            width: 1,
+            overflow: "hidden",
+          }}
         >
           {screenReaderMessage}
         </div>
@@ -542,15 +696,29 @@ const ChatApp = () => {
               key={idx}
               className={`message message-${msg.role}`}
               tabIndex={msg.role === "assistant" ? 0 : -1}
-              ref={msg.role === "assistant" && idx === messages.length - 1 ? lastAssistantMsgRef : null}
-              aria-label={msg.role === "assistant" ? `Assistant: ${msg.content.replace(/\s+/g, " ").slice(0, 200)}` : undefined}
+              ref={
+                msg.role === "assistant" && idx === messages.length - 1
+                  ? lastAssistantMsgRef
+                  : null
+              }
+              aria-label={
+                msg.role === "assistant"
+                  ? `Assistant: ${msg.content.replace(/\s+/g, " ").slice(0, 200)}`
+                  : undefined
+              }
             >
               {msg.role === "user" ? (
-                <h5 className="message-heading" style={{ fontSize: '1.05rem', margin: 0, fontWeight: 700 }}>
+                <h5
+                  className="message-heading"
+                  style={{ fontSize: "1.05rem", margin: 0, fontWeight: 700 }}
+                >
                   You
                 </h5>
               ) : (
-                <h6 className="message-heading" style={{ fontSize: '1.02rem', margin: 0, fontWeight: 700 }}>
+                <h6
+                  className="message-heading"
+                  style={{ fontSize: "1.02rem", margin: 0, fontWeight: 700 }}
+                >
                   AI
                 </h6>
               )}
@@ -574,20 +742,25 @@ const ChatApp = () => {
         )}
         <form
           className="input-area"
-          onSubmit={e => { e.preventDefault(); handleSend(); }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSend();
+          }}
           role="search"
           aria-label="Chat input area"
         >
-          <label htmlFor="chat-input" className="visually-hidden">Type your message</label>
+          <label htmlFor="chat-input" className="visually-hidden">
+            Type your message
+          </label>
           <textarea
             id="chat-input"
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
             rows={2}
             aria-label="Type your message"
-            onKeyDown={e => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 handleSend();
               }
@@ -595,22 +768,36 @@ const ChatApp = () => {
           />
           {/* Voice mode: show status and manual STT only if not in voice mode */}
           {!voiceMode && (
-            <STTButton
-              onResult={text => setInput(text)}
-              disabled={loading}
-            />
+            <STTButton onResult={(text) => setInput(text)} disabled={loading} />
           )}
           {voiceMode && (
-            <span style={{ marginRight: 8, fontWeight: 600, color: listening ? '#4f8cff' : '#888' }}>
-              {listening ? '🎤 Listening...' : '🛑 Paused'}
+            <span
+              style={{
+                marginRight: 8,
+                fontWeight: 600,
+                color: listening ? "#4f8cff" : "#888",
+              }}
+            >
+              {listening ? "🎤 Listening..." : "🛑 Paused"}
             </span>
           )}
           <button
             type="button"
             aria-label={voiceMode ? "Disable voice mode" : "Enable voice mode"}
-            style={{ marginRight: 8, background: voiceMode ? '#4f8cff' : '#fff', color: voiceMode ? '#fff' : '#4f8cff', border: '1px solid #4f8cff', borderRadius: 6, padding: '2px 10px', fontWeight: 600, cursor: 'pointer' }}
-            onClick={() => setVoiceMode(v => !v)}
-          >{voiceMode ? '🔊 Voice On' : '🔇 Voice Off'}</button>
+            style={{
+              marginRight: 8,
+              background: voiceMode ? "#4f8cff" : "#fff",
+              color: voiceMode ? "#fff" : "#4f8cff",
+              border: "1px solid #4f8cff",
+              borderRadius: 6,
+              padding: "2px 10px",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+            onClick={() => setVoiceMode((v) => !v)}
+          >
+            {voiceMode ? "🔊 Voice On" : "🔇 Voice Off"}
+          </button>
           <button
             type="submit"
             disabled={loading || !input.trim()}
@@ -618,7 +805,7 @@ const ChatApp = () => {
           >
             Send
           </button>
-                {/* Removed misplaced TTSButton. It is rendered per message below. */}
+          {/* Removed misplaced TTSButton. It is rendered per message below. */}
         </form>
         {loading && <Loader />}
         {responseTime && (

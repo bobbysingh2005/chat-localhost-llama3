@@ -16,7 +16,11 @@ function MarkdownRenderer({ content }) {
             <code
               className={className}
               {...props}
-              style={{ backgroundColor: "#eee", padding: "2px 4px", borderRadius: "4px" }}
+              style={{
+                backgroundColor: "#eee",
+                padding: "2px 4px",
+                borderRadius: "4px",
+              }}
             >
               {children}
             </code>
@@ -43,7 +47,8 @@ function MarkdownRenderer({ content }) {
 }
 
 const Chat = () => {
-  const { currentModel, apiUrl, isStream, systemTemplate } = useContext(AppSetting);
+  const { currentModel, apiUrl, isStream, systemTemplate } =
+    useContext(AppSetting);
 
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
@@ -90,7 +95,8 @@ const Chat = () => {
   };
 
   const copyCode = (code) => {
-    navigator.clipboard.writeText(code)
+    navigator.clipboard
+      .writeText(code)
       .then(() => alert("Code copied to clipboard!"))
       .catch((err) => console.error("Failed to copy code: ", err));
   };
@@ -125,7 +131,8 @@ const Chat = () => {
         body: JSON.stringify(data),
       });
 
-      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      if (!response.ok)
+        throw new Error(`HTTP error! Status: ${response.status}`);
 
       const responseData = await response.json();
       const endTime = performance.now();
@@ -162,7 +169,6 @@ const Chat = () => {
       <h2 tabIndex={-1}>Generate</h2>
 
       <div className="container my-5">
-
         {/* System Role Alert */}
         {systemTemplate && (
           <div
@@ -207,7 +213,9 @@ const Chat = () => {
               <article
                 key={idx}
                 className={`message mb-3 p-3 rounded-3 ${
-                  msg.name === user ? "bg-primary text-white ms-auto" : "bg-secondary text-dark"
+                  msg.name === user
+                    ? "bg-primary text-white ms-auto"
+                    : "bg-secondary text-dark"
                 }`}
                 tabIndex={0}
                 aria-label={`${msg.name} says: ${msg.text.replace(/[\r\n]+/g, " ")}`}
@@ -249,7 +257,9 @@ const Chat = () => {
             aria-live="polite"
             aria-atomic="true"
           >
-            <span className="text-muted small">Response Time: {responseTime}</span>
+            <span className="text-muted small">
+              Response Time: {responseTime}
+            </span>
           </div>
         )}
 
@@ -265,7 +275,11 @@ const Chat = () => {
         )}
 
         {/* Message Input Form */}
-        <form onSubmit={handleSendMessage} className="w-100 d-flex mt-3" aria-label="Send a message">
+        <form
+          onSubmit={handleSendMessage}
+          className="w-100 d-flex mt-3"
+          aria-label="Send a message"
+        >
           <input
             type="text"
             value={message}
@@ -276,7 +290,11 @@ const Chat = () => {
             aria-label="Type your message here"
             required
           />
-          <button type="submit" className="btn btn-primary" aria-label="Send message">
+          <button
+            type="submit"
+            className="btn btn-primary"
+            aria-label="Send message"
+          >
             Send
           </button>
         </form>

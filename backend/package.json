@@ -22,7 +22,10 @@
   "devDependencies": {
     "@types/bcrypt": "latest",
     "@types/node": "^24.0.14",
+    "@typescript-eslint/eslint-plugin": "^8.44.1",
+    "@typescript-eslint/parser": "^8.44.1",
     "nodemon": "^3.1.10",
+    "standard-version": "^9.5.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },

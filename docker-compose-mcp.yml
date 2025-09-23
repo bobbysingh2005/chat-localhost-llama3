@@ -1,0 +1,109 @@
+# version: "3.9"
+
+services:
+  # 🧠 Ollama (LLM runtime)
+  ollama:
+    container_name: ollama
+    image: ollama/ollama:rocm
+    restart: always
+    ports:
+      - "11434:11434"
+    shm_size: 10gb
+    mem_limit: 16gb
+    cpus: '10'
+    environment:
+      - OLLAMA_ORIGINS=*
+      - OLLAMA_HOST=0.0.0.0:11434
+      - GPU=all
+      - DEVICE_DRIVER=ryzen
+      - OLLAMA_CPPFLAGS=-DCUDA_ARCH_BIN=70 -DCUDA_ARCH_PTX=70 -DHLSL_TARGET=sm70
+      - OLLAMA_LDFLAGS=-lrocm_device
+    volumes:
+      - ./models:/root/.ollama
+    networks:
+      - llama_net
+
+  # 🍃 MongoDB database
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./dump:/dump
+      - mongo_data:/data/db
+    networks:
+      - llama_net
+    restart: always
+    # restart: unless-stopped
+
+  # 🔧 MCP Gateway
+  # mcp-gateway:
+    # image: docker/mcp-gateway:latest
+    # container_name: mcp-gateway
+    # volumes:
+      # - ./mcp-config:/root/.docker/mcp
+      # - /var/run/docker.sock:/var/run/docker.sock
+    # depends_on:
+      # - mcp-mongo
+    # networks:
+      # - llama_net
+    # restart: always
+    # restart: unless-stopped
+
+  # 📦 MCP Mongo server (with mongoose)
+  mcp-mongo:
+    build: ./mcp-mongo
+    container_name: mcp-mongo
+    ports:
+      - "3001:3001"   # exposed for MCP CLI and config
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/myapp   # ✅ fixed host
+    depends_on:
+      - mongo
+    networks:
+      - llama_net
+    restart: always
+    # restart: unless-stopped
+
+  # 🛠️ Backend
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "3000:3000"   # now consistent
+    environment:
+      - NODE_ENV=production
+      - OLLAMA_HOST=http://ollama:11434
+      - MCP_GATEWAY_URL=http://mcp-gateway:8080
+      - MONGO_URL=mongodb://mongo:27017/chatApp   # ✅ added to backend too
+    depends_on:
+      - ollama
+      - mcp-gateway
+    networks:
+      - llama_net
+    restart: always
+    # restart: unless-stopped
+
+  # 🌐 Nginx
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+      - ollama
+      - mcp-mongo
+    networks:
+      - llama_net
+
+volumes:
+  mongo_data:
+
+networks:
+  llama_net:

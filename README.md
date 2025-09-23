@@ -1,12 +1,51 @@
+## Code Quality & Standards
+
+This project enforces high code quality and maintainability:
+- All code is linted and auto-formatted using ESLint and Prettier (frontend: JavaScript/React, backend: TypeScript)
+- TypeScript is used for backend for type safety and clarity
+- All methods and variables are documented with meaningful comments
+- No unused variables or functions are allowed in production code
+- Prop types are enforced in React components
+- Code is reviewed for readability, maintainability, and accessibility
+
+To check or fix code style, run:
+```bash
+# Frontend
+cd frontend
+npx eslint src/**/*.jsx --fix
+npx prettier --write .
+
+# Backend
+cd backend
+npx eslint src/**/*.ts --fix
+npx prettier --write .
+```
+
+Contributions must follow these standards for acceptance.
 # Chat Localhost Llama3
 
-Self-hosted chat application using Ollama for LLM inference, Fastify backend, and React frontend.
 
-Core features implemented
-- Fastify backend with user auth and conversation storage (MongoDB)
-- Backend proxy to Ollama (`POST /api/generate`)
-- React frontend with unified Chat/Generate UI and Guest mode
-- Docker Compose configuration for local development
+Modern, accessible, and secure self-hosted chat application using Ollama for LLM inference, Fastify backend, and React frontend.
+
+## Features
+- Secure login/register with JWT authentication (guest mode supported)
+- Unified chat/generate UI (React, accessible, role-based prompts)
+- Advanced Markdown/code rendering with copy/edit (Monaco Editor)
+- Conversation history and management (MongoDB for main app, localStorage for guests)
+- Sound feedback for user and AI actions
+- Hands-free browser-based voice mode (STT/TTS loop, English only for now)
+- Accessibility: screen reader support, keyboard navigation, aria-live regions
+- Docker Compose for full stack (frontend, backend, MongoDB, Ollama, Nginx)
+- REST and MCP (Model Connection Protocol) chat modes (switchable)
+- API endpoints for auth, chat, and conversation management
+
+## Planned/Recent Updates
+- Multi-language support for STT/TTS (Hindi, etc.)
+- Modular voice mode: browser/server toggle
+- Server-based TTS/STT via Docker
+- Improved accessibility and code UX
+- Rate limiting, logging, and input validation for security
+- Health checks and CI/testing setup
 
 ## Environment & configuration
 
@@ -57,71 +96,51 @@ npm run dev
 - LLM: `POST /api/generate` (backend proxies to Ollama `/v1/generate`)
 - Conversations: `POST /conversations`, `GET /conversations`, `GET /conversations/:id`, `PUT /conversations/:id`, `DELETE /conversations/:id`
 
-## Guest mode & accessibility
 
+## Guest Mode & Accessibility
 - "Continue as Guest" allows anonymous usage; guest conversations are saved to `localStorage` under `guest_conversation`.
-- Chat/Generate UI includes `aria-live` announcements and focus management for screen reader accessibility.
+- Chat/Generate UI includes `aria-live` announcements, focus management, and semantic HTML for screen reader accessibility.
+- All fields have text labels, keyboard shortcuts supported, and no visual-only cues.
+
 
 ## Usage
+After login (or as guest), you are redirected to the unified chat/generate interface where you can chat, generate, and manage conversations. Use voice mode for hands-free chat. REST and MCP chat modes are supported.
 
-After login, you are redirected to the unified chat/generate interface where you can chat or generate as you wish.
 
-## Testing & next steps
-
-Planned items:
+## Testing & Next Steps
 - Add backend tests (vitest/jest + supertest) and frontend tests (vitest + testing-library)
 - Add CI (GitHub Actions) to run tests and lint
 - Accessibility audit and keyboard navigation improvements
-
-If you want, I'll implement tests next and finish a developer guide with detailed API docs.
-cd my-chat
+- Multi-language and server-based voice features
 ```
 
-1. Install Dependencies
-(Optional: Only if you need to modify the React code)
-Install the required npm packages for the React frontend:
-```bash
-npm install
-```
 
-1. Start the Application
-* Development Mode:
-Start the React development server and open the application in your browser:
-```bash
-npm run dev
-```
-The application will be available at: http://localhost:8080.
-* Production Mode:
-To run both the React frontend and the Ollama backend as Docker services, use:
-```bash
-npm start
-```
-The application will be accessible at: http://localhost:8080.
-* Verify the status of the Docker containers with:
-```bash
-docker ps --format '{{.Names}}\t{{.Status}}\t{{.Ports}}'
-```
+## Quick Start
+1. Install dependencies for frontend and backend (or use Docker Compose):
+	```powershell
+	cd frontend
+	npm install
+	cd ../backend
+	npm install
+	```
+2. Start all services with Docker Compose (recommended):
+	```powershell
+	docker compose up -d
+	```
+3. Access the app:
+	- Web UI: http://localhost:8000 (nginx)
+	- Frontend (dev): http://localhost:5173
+	- Backend (dev): http://localhost:3000
 
-1. Initial Setup
-On first run, you will be prompted to enter your name. This information is saved in localStorage, so you won't need to re-enter it in future sessions.
-2. Initially, there will be no Llama model available in the chat app. To get the latest Llama models, run the following command:
-```bash
-docker exec -it chatApi ollama pull llama3.1
+## Llama Model Setup
+To use the latest Llama models, run:
+```powershell
+docker exec -it ollama ollama pull llama3
 ```
-3. Using Other Llama Models
-• If you want to use a different Llama model, use the same command to pull the desired model into the `chatApi` container. For example, replace `llama3.1` with the specific model name or version you wish to use
+Replace `llama3` with the desired model name/version as needed.
 
-###### Usage Tips
-* Interact with the chat application through the React frontend, which communicates with the Llama3 module via the Ollama REST API.
-* Ensure the Docker container for Llama3 is running and properly configured before starting the React application.
+## Contributing
+Contributions are welcome! Fork, branch, and submit a pull request.
 
-##### Contributing
-Contributions are welcome! To contribute to this project:
-1. Fork the repository.
-2. Create a new branch for your changes.
-3. Make your modifications.
-4. Submit a pull request with a description of your changes.
-
-##### License
-This project is licensed under the MIT License. See the LICENSE file for details.
-This version includes improved descriptions and formatting, ensuring that it is easy to read and follow.
+## License
+MIT License. See LICENSE file for details.

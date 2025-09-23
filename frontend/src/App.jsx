@@ -7,7 +7,7 @@ function App() {
   return (
     <AppSettingProvider>
       <BrowserRouter>
-      <DefaultLayout />
+        <DefaultLayout />
       </BrowserRouter>
     </AppSettingProvider>
   );

@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from 'react';
-import { AppSetting } from './App-setting';
+import { useContext, useEffect, useState } from "react";
+import { AppSetting } from "./App-setting";
 
 export default function Conversations() {
   const { apiUrl, user } = useContext(AppSetting);
@@ -15,10 +15,12 @@ export default function Conversations() {
   const fetchList = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${apiUrl}/conversations`, { credentials: 'include' });
+      const res = await fetch(`${apiUrl}/conversations`, {
+        credentials: "include",
+      });
       const json = await res.json();
       if (json?.success) setList(json.conversations || []);
-      else setError('Failed to fetch');
+      else setError("Failed to fetch");
     } catch (e) {
       setError(String(e));
     } finally {
@@ -28,12 +30,17 @@ export default function Conversations() {
 
   const handleLoad = async (id) => {
     try {
-      const res = await fetch(`${apiUrl}/conversations/${id}`, { credentials: 'include' });
+      const res = await fetch(`${apiUrl}/conversations/${id}`, {
+        credentials: "include",
+      });
       const json = await res.json();
       if (json?.success) {
         // store in local storage for chat to pick up
-        localStorage.setItem('guest_conversation', JSON.stringify({ id, messages: json.conversation.messages }));
-        window.location.href = '/chat';
+        localStorage.setItem(
+          "guest_conversation",
+          JSON.stringify({ id, messages: json.conversation.messages }),
+        );
+        window.location.href = "/chat";
       }
     } catch (e) {
       setError(String(e));
@@ -41,9 +48,12 @@ export default function Conversations() {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Delete conversation?')) return;
+    if (!confirm("Delete conversation?")) return;
     try {
-      await fetch(`${apiUrl}/conversations/${id}`, { method: 'DELETE', credentials: 'include' });
+      await fetch(`${apiUrl}/conversations/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
       fetchList();
     } catch (e) {
       setError(String(e));
@@ -58,14 +68,29 @@ export default function Conversations() {
       {!loading && list.length === 0 && <p>No conversations yet.</p>}
       <ul className="list-group">
         {list.map((c) => (
-          <li key={c._id} className="list-group-item d-flex justify-content-between align-items-center">
+          <li
+            key={c._id}
+            className="list-group-item d-flex justify-content-between align-items-center"
+          >
             <div>
               <strong>{c.title}</strong>
-              <div className="text-muted small">{new Date(c.updatedAt).toLocaleString()}</div>
+              <div className="text-muted small">
+                {new Date(c.updatedAt).toLocaleString()}
+              </div>
             </div>
             <div>
-              <button className="btn btn-sm btn-primary me-2" onClick={() => handleLoad(c._id)}>Load</button>
-              <button className="btn btn-sm btn-danger" onClick={() => handleDelete(c._id)}>Delete</button>
+              <button
+                className="btn btn-sm btn-primary me-2"
+                onClick={() => handleLoad(c._id)}
+              >
+                Load
+              </button>
+              <button
+                className="btn btn-sm btn-danger"
+                onClick={() => handleDelete(c._id)}
+              >
+                Delete
+              </button>
             </div>
           </li>
         ))}

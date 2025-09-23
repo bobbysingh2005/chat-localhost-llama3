@@ -5,7 +5,7 @@
   "description": "this simple react app to access llama3 module by ollama rest api.",
   "type": "module",
   "main": "index.js",
-  "workspaces":[
+  "workspaces": [
     "backend",
     "frontend"
   ],
@@ -14,7 +14,15 @@
     "start:app": "docker compose up -d app",
     "start": "docker compose up -d",
     "start:backend": "cd backend && yarn dev",
-    "start:frontend": "cd frontend && yarn dev"
+    "start:frontend": "cd frontend && yarn dev",
+    "release": "standard-version",
+    "release:minor": "standard-version --release-as minor",
+    "release:major": "standard-version --release-as major"
+  },
+  "standard-version": {
+    "skip": {
+      "tag": false
+    }
   },
   "keywords": [
     "reactJs",
@@ -37,5 +45,8 @@
     "url": "git+https://github.com/bobbysingh2005/chat-localhost-llama3.git"
   },
   "license": "MIT",
-  "author": "bobby singh <bobbysingh2005@gmail.com>"
+  "author": "bobby singh <bobbysingh2005@gmail.com>",
+  "devDependencies": {
+    "eslint": "^8.57.1"
+  }
 }

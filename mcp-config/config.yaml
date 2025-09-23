@@ -1,0 +1,8 @@
+version: v1
+services:
+  mongo:
+    url: mongodb://mongo:27017/chatApp   # matches your docker-compose mongo
+  backend:
+    url: http://backend:3000           # backend inside llama_net
+  ollama:
+    url: http://ollama:11434           # ollama inside llama_net

@@ -25,7 +25,9 @@ function MainHeader() {
 
     const fetchModels = async () => {
       try {
-        const response = await fetch(`${apiUrl}/api/tags`, { credentials: 'include' });
+        const response = await fetch(`${apiUrl}/api/tags`, {
+          credentials: "include",
+        });
         const data = await response.json();
         if (!mounted) return;
         if (Array.isArray(data.models) && data.models.length > 0) {
@@ -43,17 +45,19 @@ function MainHeader() {
     const onFocus = () => {
       fetchModels();
     };
-    window.addEventListener('focus', onFocus);
+    window.addEventListener("focus", onFocus);
 
     return () => {
       mounted = false;
-      window.removeEventListener('focus', onFocus);
+      window.removeEventListener("focus", onFocus);
     };
   }, [apiUrl, updateList]);
 
   const handleLogout = () => {
     setUser({});
-    try { localStorage.removeItem('user'); } catch (e) { }
+    try {
+      localStorage.removeItem("user");
+    } catch (e) {}
     navigate("/");
   };
 
@@ -61,7 +65,9 @@ function MainHeader() {
     <header className="bg-light border-bottom py-3 px-4">
       <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div className="d-flex gap-3 align-items-center flex-wrap">
-          <Link to="/" className="text-dark fw-bold fs-4 text-decoration-none">ChatApp</Link>
+          <Link to="/" className="text-dark fw-bold fs-4 text-decoration-none">
+            ChatApp
+          </Link>
         </div>
 
         <div className="text-center my-2 flex-grow-1">
@@ -73,14 +79,16 @@ function MainHeader() {
         <div className="d-flex gap-2 align-items-center flex-wrap">
           {/* Model Dropdown */}
           <div>
-            <label htmlFor="model-select" className="me-2 fw-medium">Model:</label>
+            <label htmlFor="model-select" className="me-2 fw-medium">
+              Model:
+            </label>
             <select
               id="model-select"
               onChange={changeModel}
               value={currentModel}
               className="form-select form-select-sm"
             >
-              {(!modelList || modelList.length === 0) ? (
+              {!modelList || modelList.length === 0 ? (
                 <option disabled value="">{`Loading models...`}</option>
               ) : (
                 modelList.map(({ name, model }, i) => (
@@ -94,7 +102,9 @@ function MainHeader() {
 
           {/* Role/Template Dropdown */}
           <div>
-            <label htmlFor="template-select" className="me-2 fw-medium">Role:</label>
+            <label htmlFor="template-select" className="me-2 fw-medium">
+              Role:
+            </label>
             <select
               id="template-select"
               onChange={(e) => setSystemTemplate(e.target.value)}

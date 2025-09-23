@@ -1,7 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 
 // Accessible modal with backdrop, focus trap, ARIA, and screen reader announcements
-export default function LoginModal({ open, onClose, onGuest, onOpenRegister, onOpenLogin }) {
+export default function LoginModal({
+  open,
+  onClose,
+  onGuest,
+  onOpenRegister,
+  onOpenLogin,
+}) {
   const modalRef = useRef(null);
   const firstBtnRef = useRef(null);
   const lastBtnRef = useRef(null);
@@ -16,16 +22,18 @@ export default function LoginModal({ open, onClose, onGuest, onOpenRegister, onO
     firstBtnRef.current?.focus();
     // Announce only once per open
     if (!hasAnnounced && srAnnounceRef.current) {
-      srAnnounceRef.current.textContent = 'Login dialog opened.';
+      srAnnounceRef.current.textContent = "Login dialog opened.";
       setHasAnnounced(true);
       setTimeout(() => {
-        if (srAnnounceRef.current) srAnnounceRef.current.textContent = '';
+        if (srAnnounceRef.current) srAnnounceRef.current.textContent = "";
       }, 1200);
     }
     // Focus trap
     const handleKeyDown = (e) => {
-      if (e.key === 'Tab') {
-        const focusable = modalRef.current.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      if (e.key === "Tab") {
+        const focusable = modalRef.current.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        );
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
         if (e.shiftKey && document.activeElement === first) {
@@ -35,14 +43,14 @@ export default function LoginModal({ open, onClose, onGuest, onOpenRegister, onO
           e.preventDefault();
           first.focus();
         }
-      } else if (e.key === 'Escape') {
+      } else if (e.key === "Escape") {
         onClose();
       }
     };
-    modalRef.current?.addEventListener('keydown', handleKeyDown);
+    modalRef.current?.addEventListener("keydown", handleKeyDown);
     return () => {
-      modalRef.current?.removeEventListener('keydown', handleKeyDown);
-      if (srAnnounceRef.current) srAnnounceRef.current.textContent = '';
+      modalRef.current?.removeEventListener("keydown", handleKeyDown);
+      if (srAnnounceRef.current) srAnnounceRef.current.textContent = "";
     };
   }, [open, onClose, hasAnnounced]);
 
@@ -56,9 +64,17 @@ export default function LoginModal({ open, onClose, onGuest, onOpenRegister, onO
       role="presentation"
       aria-hidden={!open}
       style={{
-        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.6)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 2000,
       }}
-      onClick={(e) => { if (e.target.id === 'login-backdrop') onClose(); }}
+      onClick={(e) => {
+        if (e.target.id === "login-backdrop") onClose();
+      }}
     >
       <section
         id="login-modal"
@@ -68,25 +84,66 @@ export default function LoginModal({ open, onClose, onGuest, onOpenRegister, onO
         aria-labelledby="login-title"
         aria-describedby="login-desc"
         tabIndex={-1}
-        style={{ background: '#fff', padding: 24, borderRadius: 8, width: 'min(560px, 95%)' }}
+        style={{
+          background: "#fff",
+          padding: 24,
+          borderRadius: 8,
+          width: "min(560px, 95%)",
+        }}
       >
         <h2 id="login-title">Welcome to ChatApp</h2>
-        <p id="login-desc">Sign in to save conversations, or continue as a guest to try the chat.</p>
+        <p id="login-desc">
+          Sign in to save conversations, or continue as a guest to try the chat.
+        </p>
 
-        <nav aria-label="Login options" style={{ display: 'flex', gap: 8, marginTop: 16, justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button ref={firstBtnRef} onClick={onOpenLogin} className="btn btn-primary" aria-label="Sign in with your account">Sign In</button>
-            <button onClick={onOpenRegister} className="btn btn-outline-primary" aria-label="Register a new account">Register</button>
+        <nav
+          aria-label="Login options"
+          style={{
+            display: "flex",
+            gap: 8,
+            marginTop: 16,
+            justifyContent: "space-between",
+          }}
+        >
+          <div style={{ display: "flex", gap: 8 }}>
+            <button
+              ref={firstBtnRef}
+              onClick={onOpenLogin}
+              className="btn btn-primary"
+              aria-label="Sign in with your account"
+            >
+              Sign In
+            </button>
+            <button
+              onClick={onOpenRegister}
+              className="btn btn-outline-primary"
+              aria-label="Register a new account"
+            >
+              Register
+            </button>
           </div>
           <div>
-            <button onClick={onGuest} className="btn btn-secondary" aria-label="Continue as guest user">Continue as Guest</button>
+            <button
+              onClick={onGuest}
+              className="btn btn-secondary"
+              aria-label="Continue as guest user"
+            >
+              Continue as Guest
+            </button>
           </div>
         </nav>
 
         <div style={{ marginTop: 12 }}>
-          <button ref={lastBtnRef} onClick={onClose} className="btn btn-link" aria-label="Close login dialog">Close</button>
+          <button
+            ref={lastBtnRef}
+            onClick={onClose}
+            className="btn btn-link"
+            aria-label="Close login dialog"
+          >
+            Close
+          </button>
         </div>
-  <div ref={srAnnounceRef} className="sr-only" aria-live="polite"></div>
+        <div ref={srAnnounceRef} className="sr-only" aria-live="polite"></div>
       </section>
     </div>
   );

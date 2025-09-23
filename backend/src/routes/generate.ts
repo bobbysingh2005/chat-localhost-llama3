@@ -41,7 +41,7 @@ export async function generateRoutes(fastify: FastifyInstance) {
         const pass = new PassThrough();
         const reader = res.body.getReader();
 
-        ;(async () => {
+        (async () => {
           try {
             while (true) {
               const { done, value } = await reader.read();

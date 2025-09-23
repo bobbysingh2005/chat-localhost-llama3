@@ -1,0 +1,25 @@
+{
+  "name": "mcp-mongo-server",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon --watch . --exec node index.js"
+  },
+  "dependencies": {
+    "mongoose": "^7.5.0",
+    "dotenv": "^16.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "description": "",
+  "keywords": [
+    "mcp",
+    "mongo",
+    "server"
+  ],
+  "author": "bobby singh<bobbysingh2005@gmail.com>",
+  "license": "ISC"
+}

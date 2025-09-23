@@ -13,7 +13,9 @@ export default function Home() {
     <>
       <h1>Home</h1>
 
-  <button type="button" onClick={() => nav("/chat")}>Start Chat / Generate</button>
+      <button type="button" onClick={() => nav("/chat")}>
+        Start Chat / Generate
+      </button>
     </>
   );
 }

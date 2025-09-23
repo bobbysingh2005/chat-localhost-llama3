@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { AppSetting } from '../views/App-setting';
+import React, { useEffect, useState, useContext } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { AppSetting } from "../views/App-setting";
 
 const ApiHealthChecker = () => {
   const { apiUrl } = useContext(AppSetting);
@@ -21,10 +21,10 @@ const ApiHealthChecker = () => {
       }
 
       try {
-        const base = apiUrl || 'http://localhost:3000';
+        const base = apiUrl || "http://localhost:3000";
         const response = await fetch(`${base}/health`, {
-          method: 'GET',
-          cache: 'no-cache',
+          method: "GET",
+          cache: "no-cache",
         });
 
         setIsOnline(response.ok);
@@ -42,13 +42,13 @@ const ApiHealthChecker = () => {
   // Accessible status text for screen readers
   const statusText =
     isOnline === null
-      ? 'Checking API status'
+      ? "Checking API status"
       : isOnline
-      ? 'API is online'
-      : 'API is offline';
+        ? "API is online"
+        : "API is offline";
 
   return (
-    <div style={{ position: 'relative', fontFamily: 'Arial' }}>
+    <div style={{ position: "relative", fontFamily: "Arial" }}>
       {/* Spinner in top-left */}
       {showSpinner && (
         <FontAwesomeIcon
@@ -56,11 +56,11 @@ const ApiHealthChecker = () => {
           spin
           aria-hidden="true"
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: 10,
             left: 10,
-            fontSize: '24px',
-            color: '#333',
+            fontSize: "24px",
+            color: "#333",
           }}
         />
       )}
@@ -70,13 +70,13 @@ const ApiHealthChecker = () => {
         role="status"
         aria-live="polite"
         style={{
-          position: 'absolute',
+          position: "absolute",
           width: 1,
           height: 1,
           margin: -1,
           padding: 0,
-          overflow: 'hidden',
-          clip: 'rect(0 0 0 0)',
+          overflow: "hidden",
+          clip: "rect(0 0 0 0)",
           border: 0,
         }}
       >
@@ -88,11 +88,11 @@ const ApiHealthChecker = () => {
         <div
           role="alert"
           style={{
-            color: 'red',
-            fontWeight: 'bold',
-            fontSize: '20px',
-            marginTop: '60px',
-            textAlign: 'center',
+            color: "red",
+            fontWeight: "bold",
+            fontSize: "20px",
+            marginTop: "60px",
+            textAlign: "center",
           }}
         >
           🔴 API is Offline

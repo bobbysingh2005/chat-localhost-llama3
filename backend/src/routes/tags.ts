@@ -7,7 +7,7 @@ export async function tagsRoutes(fastify: FastifyInstance) {
     try {
       const ollama = config.ollamaHost;
       // Try Ollama models endpoint
-      let url = `${ollama}/api/tags`;
+      const url = `${ollama}/api/tags`;
       const res = await fetch(url).catch(() => null);
 
       if (res && res.ok) {

@@ -48,7 +48,8 @@ function MarkdownRenderer({ content }) {
 }
 
 const Chat = () => {
-  const { currentModel, apiUrl, isStream, systemTemplate, user } = useContext(AppSetting);
+  const { currentModel, apiUrl, isStream, systemTemplate, user } =
+    useContext(AppSetting);
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
@@ -72,7 +73,7 @@ const Chat = () => {
 
   // Load guest conversation from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem('guest_conversation');
+    const saved = localStorage.getItem("guest_conversation");
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -134,7 +135,7 @@ const Chat = () => {
       const response = await fetch(`${apiUrl}/api/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify(payload),
       });
 
@@ -145,9 +146,15 @@ const Chat = () => {
       } else {
         const json = await response.json();
         setContext(json.context || []);
-        setMessages((prev) => [...prev, { sender: currentModel, text: json.response }]);
+        setMessages((prev) => [
+          ...prev,
+          { sender: currentModel, text: json.response },
+        ]);
         // persist guest conversation locally
-        persistConversation([...messages, { sender: currentModel, text: json.response }]);
+        persistConversation([
+          ...messages,
+          { sender: currentModel, text: json.response },
+        ]);
       }
 
       const duration = performance.now() - startTime;
@@ -170,28 +177,28 @@ const Chat = () => {
         // If conversationId exists, update; else create
         if (conversationId) {
           await fetch(`${apiUrl}/conversations/${conversationId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({ messages: msgs }),
           });
         } else {
           const res = await fetch(`${apiUrl}/conversations`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ title: 'Chat', messages: msgs }),
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ title: "Chat", messages: msgs }),
           });
           const data = await res.json();
           if (data?.conversation?._id) setConversationId(data.conversation._id);
         }
       } else {
         const payload = { id: conversationId || null, messages: msgs };
-        localStorage.setItem('guest_conversation', JSON.stringify(payload));
+        localStorage.setItem("guest_conversation", JSON.stringify(payload));
       }
     } catch (e) {
       // ignore persistence errors
-      console.error('Persist error', e);
+      console.error("Persist error", e);
     }
   };
 
@@ -230,7 +237,10 @@ const Chat = () => {
         const lastMsg = prev[prev.length - 1];
         if (!lastMsg || lastMsg.sender !== currentModel) return prev;
 
-        return [...prev.slice(0, -1), { ...lastMsg, text: lastMsg.text + content }];
+        return [
+          ...prev.slice(0, -1),
+          { ...lastMsg, text: lastMsg.text + content },
+        ];
       });
     } catch {
       // ignore bad JSON

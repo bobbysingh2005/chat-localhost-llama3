@@ -1,23 +1,22 @@
 /* Chat bubble styles for user and AI */
 .message {
-    max-width: 70%;
-    word-wrap: break-word;
-  }
-  
-  .message .message-header {
-    font-weight: bold;
-  }
-  
-  .message .message-body {
-    font-size: 14px;
-  }
-  
-  /* Adjustments for buttons */
-  .btn-outline-light {
-    background-color: rgba(255, 255, 255, 0.7);
-  }
-  
-  .message-input button {
-    flex-shrink: 0;
-  }
-  
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+.message .message-header {
+  font-weight: bold;
+}
+
+.message .message-body {
+  font-size: 14px;
+}
+
+/* Adjustments for buttons */
+.btn-outline-light {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.message-input button {
+  flex-shrink: 0;
+}
