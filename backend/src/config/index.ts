@@ -3,7 +3,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const nodeEnv = (process.env.NODE_ENV || 'development').toLowerCase();
-
+console.log(`bobby mongoUrl: String(${process.env.MONGO_URL} || 'mongodb://mongo:27017/chatApp'),`)
+// process.exit(1)
 export default {
     env: nodeEnv,
     isDev: nodeEnv === 'development',

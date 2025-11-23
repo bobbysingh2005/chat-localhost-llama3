@@ -1,6 +1,6 @@
 // Sound feedback for user and AI
 const bellSound =
-  typeof window !== "undefined" ? new window.Audio("/sounds/bell-1.mp3") : null;
+  typeof window !== "undefined" ? new window.Audio("/sounds/chimes-2.mp3") : null;
 
 // =============================
 // TODO: FUTURE PRODUCTION UPGRADE

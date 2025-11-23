@@ -68,3 +68,6 @@ coverage
 bobby-1.md 
 #yarn*.lock
 *.lock*
+
+models/
+chat_models/

@@ -9,7 +9,7 @@ export const connectToDB = async (options?: { retries?: number; intervalMs?: num
   const retries = options?.retries ?? 5;
   const intervalMs = options?.intervalMs ?? 2000; // initial wait
   const url = config.mongoUrl;
-
+console.log(`bobby inside mongo url: ${url}`)
   let attempt = 0;
   let lastErr: any = null;
 
