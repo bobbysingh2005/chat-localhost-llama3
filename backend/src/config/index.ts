@@ -1,21 +1,52 @@
 import dotenv from 'dotenv';
+import envSchema from 'env-schema';
 
 dotenv.config();
 
-const nodeEnv = (process.env.NODE_ENV || 'development').toLowerCase();
-console.log(`bobby mongoUrl: String(${process.env.MONGO_URL} || 'mongodb://mongo:27017/chatApp'),`)
-// process.exit(1)
+const schema = {
+    type: 'object',
+    required: ['NODE_ENV', 'PORT', 'SECRET_KEY', 'MONGO_URL', 'OLLAMA_HOST', 'ALLOWED_ORIGINS'],
+    properties: {
+        NODE_ENV: { type: 'string', default: 'development' },
+        PORT: { type: 'string', default: '3300' },
+        SECRET_KEY: { type: 'string', default: 'supersecret' },
+        JWT_SECRET: { type: 'string', default: 'supersecret' },
+        CUSTOM_SECRET: { type: 'string', default: '' },
+        MONGO_URL: { type: 'string', default: 'mongodb://localhost:27017/chatApp' },
+        OLLAMA_HOST: { type: 'string', default: 'http://localhost:11434' },
+        ADMIN_USER: { type: 'string', default: 'admin' },
+        ADMIN_PASSWORD: { type: 'string', default: 'Admin@123' },
+        ADMIN_EMAIL: { type: 'string', default: 'admin@example.com' },
+        ALLOWED_ORIGINS: { type: 'string', default: 'http://localhost:8080,http://localhost:5173,https://andhru.com,https://www.andhru.com,http://andhru.com' },
+        OPENWEATHER_API_KEY: { type: 'string', default: '' },
+        WEATHERAPI_KEY: { type: 'string', default: '' },
+        NEWS_API_KEY: { type: 'string', default: '' },
+        COINGECKO_API_URL: { type: 'string', default: 'https://api.coingecko.com/api/v3/simple/price' },
+    }
+};
+
+const config = envSchema({ schema, dotenv: true });
+const nodeEnv = config.NODE_ENV.toLowerCase();
+
+// Centralized config object for all environment variables
+// Use this object throughout the app for validated env access
 export default {
     env: nodeEnv,
     isDev: nodeEnv === 'development',
     isStaging: nodeEnv === 'staging',
     isProd: nodeEnv === 'production',
-    port: Number(process.env.PORT || 3000),
-    secretKey: String(process.env.SECRET_KEY || 'supersecret'),
-    mongoUrl: String(process.env.MONGO_URL || 'mongodb://mongo:27017/chatApp'),
-    ollamaHost: String(process.env.OLLAMA_HOST || 'http://localhost:11434'),
-    adminUser: String(process.env.ADMIN_USER || 'admin'),
-    adminPassword: String(process.env.ADMIN_PASSWORD || 'Admin@123'),
-    adminEmail: String(process.env.ADMIN_EMAIL || 'bobbysingh2005@gmail.com'),
-    allowedOrigins: String(process.env.ALLOWED_ORIGINS || 'http://localhost:8080,http://localhost:5173,https://andhru.com,https://www.andhru.com,http://andhru.com'),
+    port: Number(config.PORT),
+    secretKey: config.SECRET_KEY,
+    jwtSecret: config.JWT_SECRET,
+    customSecret: config.CUSTOM_SECRET,
+    mongoUrl: config.MONGO_URL,
+    ollamaHost: config.OLLAMA_HOST,
+    adminUser: config.ADMIN_USER,
+    adminPassword: config.ADMIN_PASSWORD,
+    adminEmail: config.ADMIN_EMAIL,
+    allowedOrigins: config.ALLOWED_ORIGINS,
+    openWeatherApiKey: config.OPENWEATHER_API_KEY,
+    weatherApiKey: config.WEATHERAPI_KEY,
+    newsApiKey: config.NEWS_API_KEY,
+    coinGeckoApiUrl: config.COINGECKO_API_URL,
 };

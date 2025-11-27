@@ -5,32 +5,37 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon",
-    "build": "tsc",
     "start": "node dist/index.js",
-    "prepare": "husky install"
+    "test": "jest"
   },
   "dependencies": {
-    "@fastify/cookie": "^11.0.2",
+    "@fastify/cookie": "latest",
     "@fastify/cors": "latest",
-    "@fastify/jwt": "^9.1.0",
+    "@fastify/jwt": "latest",
     "@types/mongoose": "latest",
+    "axios": "latest",
     "bcrypt": "latest",
     "dotenv": "latest",
+    "env-schema": "latest",
     "fastify": "latest",
-    "fastify-cookie": "^5.6.1",
-    "mongoose": "latest"
+    "fastify-cookie": "latest",
+    "mongoose": "latest",
+    "pino-pretty": "latest",
+    "rss-parser": "^3.13.0"
   },
   "devDependencies": {
     "@types/bcrypt": "latest",
-    "@types/node": "^24.0.14",
-    "@typescript-eslint/eslint-plugin": "^8.44.1",
-    "@typescript-eslint/parser": "^8.44.1",
-    "husky": "^8.0.0",
-    "lint-staged": "^16.2.0",
-    "nodemon": "^3.1.10",
-    "standard-version": "^9.5.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "@types/jest": "^30.0.0",
+    "@types/node": "latest",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
+    "husky": "latest",
+    "jest": "^30.2.0",
+    "lint-staged": "latest",
+    "standard-version": "latest",
+    "ts-jest": "^29.4.5",
+    "ts-node": "latest",
+    "typescript": "latest"
   },
   "description": "",
   "keywords": [],

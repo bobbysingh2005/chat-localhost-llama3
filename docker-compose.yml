@@ -11,7 +11,7 @@ services:
       - ./dump:/dump
       - mongo_data:/data/db
     networks:
-      - llama_net
+      - mynet
 
   backend:
     container_name: pro_chat_backend
@@ -19,12 +19,12 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     restart: always
-    depends_on:
-      - mongo
+    # depends_on:
+      # - mongo
     ports:
-      - "3000:3000"
+      - "3300:3300"
     networks:
-      - llama_net
+      - mynet
     environment:
       - NODE_ENV=production
 
@@ -35,7 +35,7 @@ services:
     ports:
       - "11434:11434"
     shm_size: 10gb
-    mem_limit: 20gb
+    mem_limit: 16gb
     cpus: '12'
     environment:
       - OLLAMA_ORIGINS=*
@@ -47,37 +47,11 @@ services:
     volumes:
       - ./models:/root/.ollama
     networks:
-      - llama_net
-
-  stt:
-    container_name: pro_chat_stt
-    image: alphacep/kaldi-en
-    restart: always
-    ports:
-      - "2700:2700"  # Expose the port to the host
-    expose:
-      - "2700"  # Expose to other containers on the same network
-    networks:
-      - llama_net
-
-  nginx:
-    container_name: nginx
-    image: nginx:latest
-    restart: always
-    ports:
-      - "8000:80"
-    volumes:
-      - ./frontend/dist:/usr/share/nginx/html:ro
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-    # depends_on:
-      # - backend
-      # - ollama
-      # - stt
-    networks:
-      - llama_net
+      - mynet
 
 volumes:
   mongo_data:
 
 networks:
-  llama_net:
+  mynet:
+    driver: bridge

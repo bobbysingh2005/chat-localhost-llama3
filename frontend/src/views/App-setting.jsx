@@ -8,11 +8,14 @@ const AppSettingProvider = ({ children }) => {
   // Vite exposes env variables on import.meta.env. Keep a fallback for local dev.
   const [apiUrl, setApiUrl] = useState(
     (import.meta && import.meta.env && import.meta.env.VITE_API_URL) ||
-      "http://localhost:3000",
+      "http://localhost:3300",
   );
-  const [currentModel, setModel] = useState(defaultModel);
+  const [currentModel, setModel] = useState(""); // Empty initially, user must select
   const [modelList, updateList] = useState([]);
   const [isStream, updateStream] = useState(false);
+  const [mode, setMode] = useState("chat"); // "chat" or "generate"
+  const [temperature, setTemperature] = useState(0.3); // Default for chat mode
+  const [maxTokens, setMaxTokens] = useState(500); // Default for chat mode
   const [user, setUser] = useState(() => {
     try {
       const saved = localStorage.getItem("user");
@@ -36,6 +39,17 @@ const AppSettingProvider = ({ children }) => {
       // ignore storage errors
     }
   }, [user]);
+
+  // Auto-adjust temperature and tokens when mode changes
+  useEffect(() => {
+    if (mode === "chat") {
+      setTemperature(0.3); // Lower for consistency
+      setMaxTokens(500);   // Shorter responses
+    } else {
+      setTemperature(0.6); // Higher for creativity
+      setMaxTokens(2000);  // Longer responses
+    }
+  }, [mode]);
 
   // Improved role templates with structured system prompts and examples
   // All roles preserved and upgraded to new structure (label, value, systemPrompt, example)
@@ -125,7 +139,9 @@ const AppSettingProvider = ({ children }) => {
   ];
   // (Old roleTemplates removed, only improved structure remains)
 
-  const changeModel = ({ target }) => setModel(target.value || defaultModel);
+  const changeModel = ({ target }) => setModel(target.value || "");
+
+  // Note: Removed auto-select logic - users must explicitly choose a model from the dropdown
 
   // Add screen reader message setter to context
   const [screenReaderMessage, setScreenReaderMessage] = useState("");
@@ -141,6 +157,12 @@ const AppSettingProvider = ({ children }) => {
         updateStream,
         user,
         setUser,
+        mode,
+        setMode,
+        temperature,
+        setTemperature,
+        maxTokens,
+        setMaxTokens,
         systemTemplate,
         setSystemTemplate,
         roleTemplates, // ✅ Expose roles to UI

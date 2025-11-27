@@ -25,9 +25,9 @@ export async function ensureAdminUser() {
     const exists = await User.findOne({ email: admin.email });
     if (!exists) {
       await User.create(admin);
-      console.log(`Admin user created: ${admin.email}`);
+      console.log(`   \x1b[32m✓\x1b[0m \x1b[32mAdmin user created:\x1b[0m \x1b[36m${admin.email}\x1b[0m`);
     } else {
-      console.log(`Admin user already exists: ${admin.email}`);
+      console.log(`   \x1b[32m✓\x1b[0m \x1b[90mAdmin user verified:\x1b[0m \x1b[36m${admin.email}\x1b[0m`);
     }
   }
 }

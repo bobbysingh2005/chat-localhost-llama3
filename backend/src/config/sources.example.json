@@ -1,0 +1,34 @@
+{
+  "Information Technology (IT & Computing)": [
+    "https://www.theverge.com/rss/index.xml",
+    "https://www.zdnet.com/news/rss.xml"
+  ],
+  "Artificial Intelligence & Machine Learning": [
+    "https://feeds.feedburner.com/ai-google-research",
+    "https://openai.com/blog/rss/"
+  ],
+  "Cybersecurity & Data Privacy": [
+    "https://www.bleepingcomputer.com/feed/",
+    "https://krebsonsecurity.com/feed/"
+  ],
+  "Social Media & Digital Culture": [
+    "https://mashable.com/feeds/rss/",
+    "https://www.engadget.com/rss.xml"
+  ],
+  "Science & Innovation": [
+    "https://www.science.org/rss/news_current.xml",
+    "https://www.nature.com/subjects/technology.rss"
+  ],
+  "Business & Tech Startups": [
+    "https://techcrunch.com/feed/",
+    "https://feeds.feedburner.com/venturebeat/SZYF"
+  ],
+  "World & Global Affairs": [
+    "https://www.reuters.com/world/tech/rss/",
+    "https://www.bbc.co.uk/news/technology/rss.xml"
+  ],
+  "Space & Future Tech": [
+    "https://www.space.com/feeds/all",
+    "https://www.nasa.gov/news-release/feed/"
+  ]
+}

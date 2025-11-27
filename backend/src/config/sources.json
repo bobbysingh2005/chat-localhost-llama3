@@ -1,0 +1,56 @@
+{
+  "news_feeds": {
+    "IT & Technology": [
+      { "title": "TechCrunch", "url": "https://techcrunch.com/feed" },
+      { "title": "ZDNet Break-News", "url": "https://www.zdnet.com/news/rss.xml" },
+      { "title": "Wired – Top Stories", "url": "https://www.wired.com/feed/" },
+      { "title": "Gadgets 360 – Tech News", "url": "https://www.gadgets360.com/rss" },
+      { "title": "TechCrunch – All", "url": "https://techcrunch.com/feed/" },
+      { "title": "Wired – Top Stories (RSS)", "url": "https://www.wired.com/feed/rss" },
+      { "title": "The Verge – Tech", "url": "https://www.theverge.com/rss/index.xml" },
+      { "title": "Ars Technica – Technology", "url": "https://arstechnica.com/information-technology/rss2.0.xml" },
+      { "title": "TechRadar – Latest", "url": "https://www.techradar.com/rss" },
+      { "title": "HT Tech (India)", "url": "https://tech.hindustantimes.com/rss" }
+    ],
+    "Artificial Intelligence / ML": [
+      { "title": "Wired – Artificial Intelligence", "url": "https://www.wired.com/category/artificial-intelligence/feed/" },
+      { "title": "TechCrunch – AI", "url": "https://techcrunch.com/tag/ai/feed/" }
+    ],
+    "Cybersecurity & Data Privacy": [
+      { "title": "Krebs on Security", "url": "https://krebsonsecurity.com/feed/" },
+      { "title": "Dark Reading – All", "url": "https://www.darkreading.com/rss/all.xml" },
+      { "title": "Schneier on Security", "url": "https://www.schneier.com/feed/atom/" },
+      { "title": "BleepingComputer – News", "url": "https://www.bleepingcomputer.com/feed/" },
+      { "title": "Threatpost", "url": "https://threatpost.com/feed/" },
+      { "title": "WIRED – Security", "url": "https://www.wired.com/category/security/feed/" }
+    ],
+    "Science & Innovation": [
+      { "title": "ScienceDaily – Top Science", "url": "https://www.sciencedaily.com/rss/top/science.xml" },
+      { "title": "Wired – Science", "url": "https://www.wired.com/category/science/feed/" },
+      { "title": "Ars Technica – Science", "url": "https://arstechnica.com/science/rss2.0.xml" }
+    ],
+    "Business & Tech Startups": [
+      { "title": "TechCrunch – Startups", "url": "https://techcrunch.com/category/startups/feed/" },
+      { "title": "Wired – Business", "url": "https://www.wired.com/category/business/feed/" },
+      { "title": "VentureBeat – Tech", "url": "https://venturebeat.com/feed/" }
+    ],
+    "World & Global Affairs": [
+      { "title": "BBC News – World", "url": "http://feeds.bbci.co.uk/news/world/rss.xml" },
+      { "title": "Reuters – World News", "url": "http://feeds.reuters.com/Reuters/worldNews" },
+      { "title": "New York Times – World", "url": "https://rss.nytimes.com/services/xml/rss/nyt/World.xml" }
+    ],
+    "Social Media & Digital Culture": [
+      { "title": "Wired – Culture", "url": "https://www.wired.com/category/culture/feed/" },
+      { "title": "TechCrunch – Social", "url": "https://techcrunch.com/tag/social/feed/" },
+      { "title": "The Verge – Culture", "url": "https://www.theverge.com/culture/rss/index.xml" }
+    ],
+    "Space & Future Tech": [
+      { "title": "New York Times – Science (Space / Future)", "url": "https://rss.nytimes.com/services/xml/rss/nyt/Science.xml" },
+      { "title": "TechCrunch – Space", "url": "https://techcrunch.com/category/space/feed/" }
+    ],
+    "Tech Policy & Regulation": [
+      { "title": "Wired – Ideas / Policy", "url": "https://www.wired.com/category/ideas/feed/" },
+      { "title": "Ars Technica – Tech Policy", "url": "https://arstechnica.com/tech-policy/rss2.0.xml" }
+    ]
+  }
+}

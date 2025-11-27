@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "dayjs": "^1.11.10",
+    "luxon": "^3.4.4",
+    "chrono-node": "^2.7.4",
+    "openweather-apis": "^4.2.2",
+    "axios": "^1.6.7",
+    "newsapi": "^2.4.0",
+    "geoip-lite": "^1.4.2",
+    "node-geocoder": "^4.2.0",
+    "mathjs": "^12.4.1",
+    "currency-converter-lt": "^1.2.3",
+    "node-schedule": "^2.1.1",
+    "yahoo-finance2": "^2.6.0"
+  }
+}

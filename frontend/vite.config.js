@@ -6,10 +6,12 @@ import path from "path";
 import { fileURLToPath, URL } from "node:url";
 
 // https://vitejs.dev/config/
+// Frontend dev server runs on port 3301
+// Backend API runs on port 3300
 export default defineConfig({
   server: {
     host: "0.0.0.0",
-    port: 8080,
+    port: 3301,
     hmr: { host: "localhost" },
     hot: true,
     open: true,

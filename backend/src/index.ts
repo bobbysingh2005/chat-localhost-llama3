@@ -1,33 +1,22 @@
-
 import buildApp from './app';
 import config from './config';
-import { connectToDB } from './db';
+import { connectToDB } from './config/db';
 import { join } from 'path';
 import { ensureAdminUser } from './models/user';
 
 const pkg = require(join(__dirname, '..', 'package.json'));
 
-const color = {
-  reset: '\x1b[0m',
-  bright: '\x1b[1m',
-  dim: '\x1b[2m',
-  green: '\x1b[32m',
-  cyan: '\x1b[36m',
-  yellow: '\x1b[33m',
-  magenta: '\x1b[35m',
-};
-
-function printBanner(info: { port: number; env: string; mongoUrl: string; ollama: string }) {
-  const pad = (s: string, l = 36) => s + ' '.repeat(Math.max(0, l - s.length));
+function printBanner(info: { port: number; env: string; mongoUrl: string; ollama: string; adminEmail: string; allowedOrigins: string }) {
+  // Simple, clean format for VI developers (Morgan-tiny style, no colors)
   console.log();
-  console.log(`${color.cyan}${color.bright}==============================================${color.reset}`);
-  console.log(`${color.green}${color.bright}  ${pkg.name} ${color.reset}${color.dim}v${pkg.version}${color.reset}`);
-  console.log(`${color.cyan}${color.bright}----------------------------------------------${color.reset}`);
-  console.log(`${color.yellow}${pad('Environment:')} ${color.reset}${info.env}`);
-  console.log(`${color.yellow}${pad('Server Port:')} ${color.reset}http://localhost:${info.port}`);
-  console.log(`${color.yellow}${pad('MongoDB:')} ${color.reset}${info.mongoUrl}`);
-  console.log(`${color.yellow}${pad('Ollama:')} ${color.reset}${info.ollama}`);
-  console.log(`${color.cyan}${color.bright}==============================================${color.reset}`);
+  console.log(`[${pkg.name} v${pkg.version}] Starting...`);
+  console.log(`Environment: ${info.env.toUpperCase()} | Node: ${process.version}`);
+  console.log(`Server: http://localhost:${info.port}`);
+  console.log(`MongoDB: ${info.mongoUrl}`);
+  console.log(`Ollama: ${info.ollama}`);
+  console.log(`Admin: ${info.adminEmail}`);
+  console.log(`CORS: ${info.allowedOrigins.split(',').length} origins`);
+  console.log(`Ready. Waiting for requests...`);
   console.log();
 }
 
@@ -35,22 +24,31 @@ function printBanner(info: { port: number; env: string; mongoUrl: string; ollama
 const start = async () => {
   const app = buildApp();
   try {
+    console.log('Initializing backend services...');
+    
     await connectToDB();
     await ensureAdminUser(); // Ensure admin user exists before server starts
-    const address = await app.listen({ port: config.port, host: '0.0.0.0' });
+    
+    await app.listen({ port: config.port, host: '0.0.0.0' });
 
-    // address may be string or object depending on Fastify; normalize
-    const port = config.port;
-    printBanner({ port, env: config.env, mongoUrl: config.mongoUrl, ollama: config.ollamaHost });
-
-    // Also log Fastify's own message for completeness
-    console.log(`🚀 Server running at ${address}`);
+    printBanner({ 
+      port: config.port, 
+      env: config.env, 
+      mongoUrl: config.mongoUrl, 
+      ollama: config.ollamaHost,
+      adminEmail: config.adminEmail,
+      allowedOrigins: config.allowedOrigins
+    });
   } catch (err) {
+    console.log();
+    console.log('STARTUP FAILED');
+    
     if (app && typeof app.log !== 'undefined') {
       app.log.error(err);
     } else {
-      console.error('Startup failed:', err);
+      console.error('Error:', err);
     }
+    console.log();
     process.exit(1);
   }
 };

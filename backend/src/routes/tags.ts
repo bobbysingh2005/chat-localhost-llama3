@@ -13,14 +13,16 @@ export async function tagsRoutes(fastify: FastifyInstance) {
       if (res && res.ok) {
         const json = await res.json();
         console.log('json: ', json.models[0],'\n\n')
-        // process.exit(1)
-        // Map to expected shape: [{ name, model }]
-        // const models = (json || []).map((m: any) => ({ name: m.name || m.id || m.model, model: m.id || m.name || m.model }));
+        // Map to expected shape: [{ name, model, size }]
         const models = await json.models.map((item: any) => {
-          return { name: item.name, model: item.model}
+          const size = item.details?.parameter_size || '';
+          return { 
+            name: item.name, 
+            model: item.model,
+            size: size // e.g., "1.2B", "2B"
+          }
         });
         console.log('models: ', models,'\n\n')
-        // process.exit(1)
         return reply.send({ models });
         // return reply.send({ models: json });
       }

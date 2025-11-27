@@ -4,15 +4,32 @@ import fastifyCookie from '@fastify/cookie';
 import fastifyJWT from '@fastify/jwt';
 import mongoose from 'mongoose';
 import config from './config';
-import { connectToDB } from './db';
+import { connectToDB } from './config/db';
 import { authRoutes } from './routes/auth';
+import { chatRoutes } from './routes/chat';
 import { generateRoutes } from './routes/generate';
 import { conversationRoutes } from './routes/conversations';
 import { tagsRoutes } from './routes/tags';
 
 // Create and configure Fastify instance without listening
 export function buildApp() {
-  const fastify = Fastify({ logger: true });
+  // Development-friendly logger (Morgan-tiny style: "METHOD /path 200 12ms")
+  const isDev = config.env === 'development';
+  const fastify = Fastify({ 
+    logger: isDev ? {
+      level: 'info',
+      transport: {
+        target: 'pino-pretty',
+        options: {
+          translateTime: 'HH:MM:ss',
+          ignore: 'pid,hostname,reqId',
+          singleLine: true,
+          colorize: false,
+          messageFormat: '{if req.method}{req.method} {req.url}{end}{if res.statusCode} {res.statusCode} {responseTime}ms{end}{if msg}{msg}{end}'
+        }
+      }
+    } : true
+  });
 
   // Register plugins
   // CORS whitelist — allow requests from frontend dev server and the production domain.
@@ -60,6 +77,7 @@ export function buildApp() {
 
   // Register routes
   fastify.register(authRoutes, { prefix: '/auth' });
+  fastify.register(chatRoutes);
   fastify.register(generateRoutes);
   fastify.register(conversationRoutes);
   fastify.register(tagsRoutes);

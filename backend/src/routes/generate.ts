@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import config from '../config';
+import { getSystemPrompt, validateTemperature, validateMaxTokens } from '../config/system-prompt';
 
 interface GenerateBody {
   model?: string;
@@ -7,22 +8,47 @@ interface GenerateBody {
   stream?: boolean;
   context?: any[];
   system?: string;
+  temperature?: number;
+  max_tokens?: number;
+  userLocation?: {
+    city?: string;
+    country?: string;
+    latitude?: number;
+    longitude?: number;
+  };
 }
 
+/**
+ * Generate route for long-form content creation using Ollama's /api/generate endpoint.
+ * Uses higher temperature and token limits for creative, detailed responses.
+ */
 export async function generateRoutes(fastify: FastifyInstance) {
   fastify.post('/api/generate', async (req: FastifyRequest<{ Body: GenerateBody }>, reply: FastifyReply) => {
     const body = req.body as GenerateBody;
 
-  // Use configured Ollama host (set via OLLAMA_HOST or config)
-  const ollamaHost = config.ollamaHost || 'http://localhost:11434';
+    // Use configured Ollama host (set via OLLAMA_HOST or config)
+    const ollamaHost = config.ollamaHost || 'http://localhost:11434';
+
+    // Get proper system prompt for generate mode with location context
+    const systemPrompt = getSystemPrompt('generate', body.userLocation);
+    
+    // Validate and clamp temperature/tokens for generate mode
+    const temperature = validateTemperature(body.temperature, 'generate'); // 0.5-0.7 range
+    const maxTokens = validateMaxTokens(body.max_tokens, 'generate'); // 50-4000 range
+    
+    fastify.log.info(`Generate mode request: temp=${temperature}, tokens=${maxTokens}, location=${body.userLocation?.city || 'unknown'}`);
 
     const payload: any = {
       model: body.model || 'llama3.2',
       prompt: body.prompt || '',
       stream: !!body.stream,
+      system: body.system || systemPrompt, // Use provided system or default
+      options: {
+        temperature,
+        num_predict: maxTokens,
+      },
     };
 
-    if (body.system) payload.system = body.system;
     if (body.context) payload.context = body.context;
 
     try {

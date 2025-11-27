@@ -37,17 +37,6 @@ Thumbs.db
 *.mov
 *.wmv
 
-# Project cleanup: ignore archives and unwanted files
-archive/
-archives/
-src/archives/
-src/archive/
-*.old.*
-*.bak
-*.tmp
-bk-*
-bk_*
-
 
 /.vs
 .DS_Store
