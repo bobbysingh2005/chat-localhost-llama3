@@ -26,25 +26,8 @@ interface SearchResult {
  */
 export async function searchWeb(params: SearchParams): Promise<SearchResult> {
   const { query } = params;
-
-  // TODO: Integrate with a real search API (DuckDuckGo, Google Custom Search, Bing, etc.)
-  // For now, return mock results
-  console.log(`🔍 Web search requested: "${query}"`);
-
-  // Mock search results
-  return {
-    query,
-    results: [
-      {
-        title: 'Search functionality coming soon',
-        snippet: `Your search for "${query}" will be processed once a search API is configured. For now, I can help with weather, time, and news.`,
-      },
-    ],
-    source: 'mock',
-  };
-
-  // Example implementation with DuckDuckGo Instant Answer API:
-  /*
+  // DuckDuckGo Instant Answer API integration
+  // Returns top result for the query
   try {
     const response = await axios.get('https://api.duckduckgo.com/', {
       params: {
@@ -54,9 +37,8 @@ export async function searchWeb(params: SearchParams): Promise<SearchResult> {
       },
       timeout: 5000,
     });
-
     const data = response.data;
-    
+    // Format results
     return {
       query,
       results: [
@@ -69,8 +51,17 @@ export async function searchWeb(params: SearchParams): Promise<SearchResult> {
       source: 'DuckDuckGo',
     };
   } catch (error: any) {
+    // Fallback to mock result if API fails
     console.error('Web search error:', error.message);
-    throw new Error('Failed to search the web');
+    return {
+      query,
+      results: [
+        {
+          title: 'Search unavailable',
+          snippet: `Could not fetch results for "${query}". Please try again later.`,
+        },
+      ],
+      source: 'error',
+    };
   }
-  */
 }

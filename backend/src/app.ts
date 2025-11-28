@@ -4,6 +4,7 @@ import fastifyCookie from '@fastify/cookie';
 import fastifyJWT from '@fastify/jwt';
 import mongoose from 'mongoose';
 import config from './config';
+import meetingRoutes from './routes/meetings';
 import { connectToDB } from './config/db';
 import { authRoutes } from './routes/auth';
 import { chatRoutes } from './routes/chat';
@@ -30,6 +31,13 @@ export function buildApp() {
       }
     } : true
   });
+
+  // Register reminder endpoints for scheduling/reminders
+  const reminderRoutes = require('./routes/reminder').default;
+  fastify.register(reminderRoutes);
+  // Register date endpoints for scheduling/reminders
+  const dateRoutes = require('./routes/date').default;
+  fastify.register(dateRoutes);
 
   // Register plugins
   // CORS whitelist — allow requests from frontend dev server and the production domain.
@@ -79,14 +87,22 @@ export function buildApp() {
   fastify.register(authRoutes, { prefix: '/auth' });
   fastify.register(chatRoutes);
   fastify.register(generateRoutes);
+  // Register web search/scrape routes
+  const webFeatureRoutes = require('./routes/webFeatures').default;
+  fastify.register(webFeatureRoutes);
+
+  // Register news route
+  const newsRoutes = require('./routes/news').default;
+  fastify.register(newsRoutes);
   fastify.register(conversationRoutes);
   fastify.register(tagsRoutes);
+  fastify.register(meetingRoutes);
 
   // Health
   fastify.get('/health', async () => ({ status: 'ok', db: { connected: mongoose.connection.readyState === 1, state: mongoose.connection.readyState } }));
 
   return fastify;
-}
+};//end buildApp
 
 // Export the builder function (don't call it here). Calling connectToDB / starting the
 // server should be done by the startup script so failures during DB connect don't

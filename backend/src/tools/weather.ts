@@ -6,8 +6,9 @@
  */
 
 import axios from 'axios';
+import config from '../config';
 
-const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY || '';
+const OPENWEATHER_API_KEY = config.openWeatherApiKey || '';
 const OPENWEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
 
 interface WeatherParams {

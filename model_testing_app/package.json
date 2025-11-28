@@ -1,0 +1,14 @@
+{
+  "name": "model_testing_app",
+  "version": "1.0.0",
+  "description": "This app is for testing backend REST API endpoints (especially `/api/chat`) and diagnosing model performance issues (e.g., slow response from Qwen3:0.6b).",
+  "main": "test_chat_api.js",
+  "scripts": {
+    "start": "node test_chat_api.js",
+    "test": "node test_chat_api.js",
+    "lint": "echo 'No linter configured.'"
+  },
+  "keywords": ["ai", "model", "testing", "api", "performance", "prompt"],
+  "author": "bobbysingh2005",
+  "license": "MIT"
+}

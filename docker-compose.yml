@@ -34,9 +34,9 @@ services:
     restart: always
     ports:
       - "11434:11434"
-    shm_size: 10gb
+    shm_size: 12gb
     mem_limit: 16gb
-    cpus: '12'
+    cpus: '10'
     environment:
       - OLLAMA_ORIGINS=*
       - OLLAMA_HOST=0.0.0.0:11434

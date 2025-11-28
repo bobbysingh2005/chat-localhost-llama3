@@ -21,12 +21,29 @@ const schema = {
         OPENWEATHER_API_KEY: { type: 'string', default: '' },
         WEATHERAPI_KEY: { type: 'string', default: '' },
         NEWS_API_KEY: { type: 'string', default: '' },
+        CURRENTS_API_KEY: { type: 'string', default: '' },
         COINGECKO_API_URL: { type: 'string', default: 'https://api.coingecko.com/api/v3/simple/price' },
     }
 };
 
 const config = envSchema({ schema, dotenv: true });
-const nodeEnv = config.NODE_ENV.toLowerCase();
+// Debug: log config object to inspect structure
+if (process.env.NODE_ENV === 'test') {
+    // eslint-disable-next-line no-console
+    console.log('DEBUG config object:', config);
+}
+
+// Safely access NODE_ENV property
+let nodeEnv = 'development';
+if (typeof config === 'object') {
+    if ('NODE_ENV' in config && typeof config['NODE_ENV'] === 'string') {
+        nodeEnv = config['NODE_ENV'].toLowerCase();
+    } else if ('env' in config && typeof config['env'] === 'string') {
+        nodeEnv = config['env'].toLowerCase();
+    } else if (typeof process.env.NODE_ENV === 'string') {
+        nodeEnv = process.env.NODE_ENV.toLowerCase();
+    }
+}
 
 // Centralized config object for all environment variables
 // Use this object throughout the app for validated env access
@@ -48,5 +65,6 @@ export default {
     openWeatherApiKey: config.OPENWEATHER_API_KEY,
     weatherApiKey: config.WEATHERAPI_KEY,
     newsApiKey: config.NEWS_API_KEY,
+    currentsApiKey: config.CURRENTS_API_KEY,
     coinGeckoApiUrl: config.COINGECKO_API_URL,
 };

@@ -21,28 +21,33 @@ function printBanner(info: { port: number; env: string; mongoUrl: string; ollama
 }
 
 
+const { setupWebSocket } = require('./ws');
+
 const start = async () => {
   const app = buildApp();
   try {
     console.log('Initializing backend services...');
-    
     await connectToDB();
-    await ensureAdminUser(); // Ensure admin user exists before server starts
-    
-    await app.listen({ port: config.port, host: '0.0.0.0' });
+    await ensureAdminUser();
+
+    const server = await app.listen({ port: config.port, host: '0.0.0.0' });
+    // Fastify v4: .server property is not available, use returned server directly
+    setupWebSocket(app.server);
+
+    // Start reminder cron job for scheduled reminders
+    require('./jobs/reminder-cron').startReminderCron(app);
 
     printBanner({ 
       port: config.port, 
       env: config.env, 
-      mongoUrl: config.mongoUrl, 
-      ollama: config.ollamaHost,
-      adminEmail: config.adminEmail,
-      allowedOrigins: config.allowedOrigins
+      mongoUrl: String(config.mongoUrl), 
+      ollama: String(config.ollamaHost),
+      adminEmail: String(config.adminEmail),
+      allowedOrigins: String(config.allowedOrigins)
     });
   } catch (err) {
     console.log();
     console.log('STARTUP FAILED');
-    
     if (app && typeof app.log !== 'undefined') {
       app.log.error(err);
     } else {

@@ -1,0 +1,77 @@
+{
+  "news_feeds": {
+    "Technology & AI": [
+      { "title": "TechCrunch – Tech", "url": "https://techcrunch.com/feed/" },
+      { "title": "Wired – Technology", "url": "https://www.wired.com/feed/category/tech/latest/rss" },
+      { "title": "Analytics India Magazine – AI", "url": "https://analyticsindiamag.com/feed/" },
+      { "title": "NVIDIA AI Blog", "url": "https://blogs.nvidia.com/feed/" },
+      { "title": "Economic Times – Tech (India)", "url": "https://economictimes.indiatimes.com/tech/rssfeeds/13357270.cms" },
+      { "title": "Engadget – Tech", "url": "https://www.engadget.com/rss.xml" },
+      { "title": "CNET – Tech News", "url": "https://www.cnet.com/rss/news" }
+    ],
+
+    "Cybersecurity & Privacy": [
+      { "title": "Krebs on Security", "url": "https://krebsonsecurity.com/feed/" },
+      { "title": "The Hacker News", "url": "https://feeds.feedburner.com/TheHackersNews" },
+      { "title": "BleepingComputer", "url": "https://www.bleepingcomputer.com/feed/" },
+      { "title": "SecurityWeek", "url": "https://www.securityweek.com/feed/" },
+      { "title": "WIRED – Security", "url": "https://www.wired.com/feed/category/security/latest/rss" }
+    ],
+
+    "Science & Innovation": [
+      { "title": "ScienceDaily – Top Science", "url": "https://www.sciencedaily.com/rss/top/science.xml" },
+      { "title": "Nature – Latest Research", "url": "https://www.nature.com/nature.rss" },
+      { "title": "Science News", "url": "https://www.sciencenews.org/feed" },
+      { "title": "Indian Express – Science & Tech", "url": "https://indianexpress.com/section/science/feed/" },
+      { "title": "NASA – Breaking News", "url": "https://www.nasa.gov/news-release/feed/" }
+    ],
+
+    "Business & Finance": [
+      { "title": "Economic Times – Business & Markets", "url": "https://economictimes.indiatimes.com/news/economy/rssfeeds/10527345.cms" },
+      { "title": "LiveMint – Markets", "url": "https://www.livemint.com/rss/markets" },
+      { "title": "MoneyControl – Latest", "url": "https://www.moneycontrol.com/rss/latestnews.xml" },
+      { "title": "Financial Times – Global Markets", "url": "https://www.ft.com/markets?format=rss" },
+      { "title": "Investing.com – Market News", "url": "https://www.investing.com/rss/news_25.rss" },
+      { "title": "YourStory – India Startups", "url": "https://yourstory.com/feed" },
+      { "title": "Inc42 – India Startups", "url": "https://inc42.com/feed/" }
+    ],
+
+    "Politics & Governance": [
+      { "title": "India Today – Politics", "url": "https://www.indiatoday.in/rss/1206562" },
+      { "title": "The Hindu – National", "url": "https://www.thehindu.com/news/national/feeder/default.rss" },
+      { "title": "BBC – Politics", "url": "http://feeds.bbci.co.uk/news/politics/rss.xml" },
+      { "title": "Politico – Politics", "url": "https://www.politico.com/rss/politics.xml" },
+      { "title": "Washington Post – Politics", "url": "https://feeds.washingtonpost.com/rss/politics" },
+      { "title": "NYTimes – U.S. Politics", "url": "https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml" }
+    ],
+
+    "World & Global Affairs": [
+      { "title": "BBC – World News", "url": "http://feeds.bbci.co.uk/news/world/rss.xml" },
+      { "title": "New York Times – World", "url": "https://rss.nytimes.com/services/xml/rss/nyt/World.xml" },
+      { "title": "Al Jazeera – World", "url": "https://www.aljazeera.com/xml/rss/all.xml" },
+      { "title": "The Guardian – World", "url": "https://www.theguardian.com/world/rss" }
+    ],
+
+    "Culture & Lifestyle": [
+      { "title": "Wired – Culture", "url": "https://www.wired.com/feed/category/culture/latest/rss" },
+      { "title": "IGN – Gaming", "url": "https://feeds.feedburner.com/ign/all" },
+      { "title": "Kotaku – Gaming", "url": "https://kotaku.com/rss" },
+      { "title": "CNET – Culture", "url": "https://www.cnet.com/rss/culture" }
+    ],
+
+    "Education & Research": [
+      { "title": "MIT News – Research", "url": "https://news.mit.edu/rss/feed" },
+      { "title": "Harvard Gazette", "url": "https://news.harvard.edu/gazette/feed/" },
+      { "title": "ScienceDaily – Education", "url": "https://www.sciencedaily.com/rss/education.xml" },
+      { "title": "The Hindu – Education", "url": "https://www.thehindu.com/education/feeder/default.rss" }
+    ],
+
+    "Environment & Future Tech": [
+      { "title": "Gizmodo – Future Tech", "url": "https://gizmodo.com/rss" },
+      { "title": "TechCrunch – Space", "url": "https://techcrunch.com/category/space/feed/" },
+      { "title": "ESA – Space & Missions", "url": "https://www.esa.int/rssfeed/Our_Activities" },
+      { "title": "Renewable Energy World", "url": "https://www.renewableenergyworld.com/feed/" },
+      { "title": "Space.com – Space & Astronomy", "url": "https://www.space.com/feeds/all" }
+    ]
+  }
+}

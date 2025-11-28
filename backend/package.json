@@ -15,13 +15,19 @@
     "@types/mongoose": "latest",
     "axios": "latest",
     "bcrypt": "latest",
+    "cheerio": "^1.1.2",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "dotenv": "latest",
     "env-schema": "latest",
     "fastify": "latest",
     "fastify-cookie": "latest",
     "mongoose": "latest",
+    "node-cron": "^4.2.1",
     "pino-pretty": "latest",
-    "rss-parser": "^3.13.0"
+    "rss-parser": "^3.13.0",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "@types/bcrypt": "latest",

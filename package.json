@@ -1,8 +1,8 @@
 {
   "name": "chat-localhost-llama3",
   "version": "1.0.2",
-  "private": true,
   "description": "Modern, accessible, and secure self-hosted chat application powered by Ollama LLM with JWT authentication, voice mode (STT/TTS), conversation management, and REST/MCP chat modes. Full-stack solution with React frontend, Fastify TypeScript backend, MongoDB, and Docker orchestration.",
+  "private": true,
   "type": "module",
   "main": "index.js",
   "engines": {
@@ -10,8 +10,6 @@
     "npm": ">=9.0.0"
   },
   "scripts": {
-    "preinstall": "echo Installing dependencies for all workspaces...",
-    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
     "start": "docker compose up -d",
     "start:dev": "docker compose -f docker-compose-dev.yml up -d",
     "start:mcp": "docker compose -f docker-compose-mcp.yml up -d",
@@ -26,7 +24,7 @@
     "ps": "docker compose ps",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
-    "dev:both": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "build:backend": "cd backend && npm run build",
     "build:frontend": "cd frontend && npm run build",
     "build:all": "npm run build:backend && npm run build:frontend",

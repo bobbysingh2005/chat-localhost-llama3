@@ -24,8 +24,7 @@ interface WebScrapeResult {
  */
 export async function webScrape(params: WebScrapeParams): Promise<WebScrapeResult> {
   const { url } = params;
-
-  // Validate URL
+  // Validate URL format
   try {
     new URL(url);
   } catch (err) {
@@ -36,8 +35,8 @@ export async function webScrape(params: WebScrapeParams): Promise<WebScrapeResul
       error: 'Invalid URL provided',
     };
   }
-
   try {
+    // Attempt to fetch the web page
     const response = await axios.get(url, {
       timeout: 10000,
       headers: {
@@ -45,22 +44,18 @@ export async function webScrape(params: WebScrapeParams): Promise<WebScrapeResul
       },
       maxContentLength: 1024 * 1024, // 1MB max
     });
-
     const html = response.data;
-    
-    // Basic HTML content extraction (remove tags for simple text)
+    // Remove scripts and styles, extract text
     const textContent = html
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove scripts
-      .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '') // Remove styles
-      .replace(/<[^>]+>/g, ' ') // Remove HTML tags
-      .replace(/\s+/g, ' ') // Normalize whitespace
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
       .trim()
-      .slice(0, 5000); // Limit to first 5000 chars
-
-    // Try to extract title
+      .slice(0, 5000);
+    // Extract title
     const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
     const title = titleMatch ? titleMatch[1].trim() : undefined;
-
     return {
       url,
       title,
@@ -68,13 +63,19 @@ export async function webScrape(params: WebScrapeParams): Promise<WebScrapeResul
       success: true,
     };
   } catch (error: any) {
-    console.error('Web scrape error:', error.message);
-    
+    // Enhanced error handling for DNS and network errors
+    let errorMsg = error.message || 'Failed to fetch web page';
+    if (error.code === 'ENOTFOUND' || errorMsg.includes('ENOTFOUND')) {
+      errorMsg = 'Domain not found or unreachable.';
+    } else if (error.code === 'ETIMEDOUT' || errorMsg.includes('timeout')) {
+      errorMsg = 'Request timed out.';
+    }
+    console.error('Web scrape error:', errorMsg);
     return {
       url,
       content: '',
       success: false,
-      error: error.message || 'Failed to fetch web page',
+      error: errorMsg,
     };
   }
 }

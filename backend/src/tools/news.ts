@@ -9,6 +9,7 @@ import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
 import Parser from 'rss-parser';
+import globalNews from '../config/globalNews.json';
 
 const NEWS_API_KEY = process.env.NEWS_API_KEY || '';
 const NEWS_API_BASE_URL = 'https://newsapi.org/v2/top-headlines';
@@ -27,8 +28,14 @@ interface NewsResult {
     url?: string;
     source?: string;
     publishedAt?: string;
+    category?: string;
   }>;
   totalResults: number;
+  report?: {
+    updatedCategories: string[];
+    indiaFeedCount: number;
+    globalFeedCount: number;
+  };
 }
 
 /**
@@ -38,46 +45,89 @@ export async function getNews(params: NewsParams): Promise<NewsResult> {
   const category = params.category || 'general';
   const country = params.country || 'us';
 
-  // If no API key, use sources.json for RSS feeds
+  // If no API key, use globalNews.json for RSS feeds
   if (!NEWS_API_KEY) {
-    console.log('⚠️ NewsAPI key not configured. Using sources.json for RSS feeds.');
+    console.log('⚠️ NewsAPI key not configured. Using globalNews.json for RSS feeds.');
     try {
-      const sourcesPath = path.resolve(__dirname, '../config/sources.json');
-      const sourcesRaw = fs.readFileSync(sourcesPath, 'utf-8');
-      const sources = JSON.parse(sourcesRaw);
-      const feeds = sources.news_feeds[category] || sources.news_feeds['IT & Technology'] || [];
       const parser = new Parser();
-      let articles: any[] = [];
-      for (const feed of feeds.slice(0, 2)) { // Limit to 2 feeds for speed
+      let indiaArticles: any[] = [];
+      let globalArticles: any[] = [];
+      let allFeeds: any[] = [];
+      // Merge all feeds from globalNews.json
+      for (const [cat, feeds] of Object.entries(globalNews.news_feeds)) {
+        for (const feed of feeds) {
+          allFeeds.push({ ...feed, category: cat });
+        }
+      }
+      // Fetch articles for each feed
+      for (const feed of allFeeds) {
         try {
           const rss = await parser.parseURL(feed.url);
-          articles = articles.concat(
-            rss.items.slice(0, 3).map((item: any) => ({
-              title: item.title,
-              description: item.contentSnippet || item.summary || '',
-              url: item.link,
-              source: feed.title,
-              publishedAt: item.pubDate,
-            }))
-          );
+          const items = rss.items.slice(0, 3).map((item: any) => ({
+            title: item.title,
+            description: item.contentSnippet || item.summary || '',
+            url: item.link,
+            source: feed.title,
+            publishedAt: item.pubDate,
+            category: feed.category,
+          }));
+          // Separate India-specific feeds
+          if (feed.title.toLowerCase().includes('india')) {
+            indiaArticles = indiaArticles.concat(items);
+          } else {
+            globalArticles = globalArticles.concat(items);
+          }
         } catch (err) {
           console.error('RSS fetch error:', feed.url, (err as any).message);
         }
       }
-      if (articles.length === 0) {
-        articles.push({
-          title: 'No news available',
-          description: 'Unable to fetch news from RSS sources.',
+      // Deduplicate articles by URL
+      const dedup = (arr: any[]) => {
+        const seen = new Set();
+        return arr.filter(a => {
+          if (!a.url || seen.has(a.url)) return false;
+          seen.add(a.url);
+          return true;
         });
+      };
+      indiaArticles = dedup(indiaArticles).sort((a, b) => new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime());
+      globalArticles = dedup(globalArticles).sort((a, b) => new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime());
+      // Filter articles by requested category/topic
+      const requestedCategory = category.toLowerCase();
+      const filteredIndia = indiaArticles.filter(a => (a.category || '').toLowerCase().includes(requestedCategory));
+      const filteredGlobal = globalArticles.filter(a => (a.category || '').toLowerCase().includes(requestedCategory));
+      const filteredArticles = [...filteredIndia, ...filteredGlobal];
+      // Concise report
+      const report = {
+        updatedCategories: Array.from(new Set(allFeeds.map(f => f.category))),
+        indiaFeedCount: filteredIndia.length,
+        globalFeedCount: filteredGlobal.length,
+      };
+      // If no matching articles, return polite message
+      if (filteredArticles.length === 0) {
+        return {
+          category,
+          country,
+          articles: [
+            {
+              title: 'No relevant news found',
+              description: `Sorry, no news articles were found related to "${category}" in the current context. Please try a different topic or check back later.`,
+            },
+          ],
+          totalResults: 0,
+          report,
+        };
       }
+      // Return filtered and categorized articles
       return {
         category,
         country,
-        articles,
-        totalResults: articles.length,
+        articles: filteredArticles,
+        totalResults: filteredArticles.length,
+        report,
       };
     } catch (err) {
-      console.error('sources.json error:', (err as any).message);
+      console.error('globalNews.json error:', (err as any).message);
       return {
         category,
         country,

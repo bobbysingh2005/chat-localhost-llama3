@@ -1,5 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import config from '../config';
+import fs from 'fs';
+import path from 'path';
 import { getToolDefinitions, executeTool } from '../tools';
 import { getSystemPrompt, validateTemperature, validateMaxTokens } from '../config/system-prompt';
 
@@ -36,37 +38,46 @@ interface ChatBody {
  */
 export async function chatRoutes(fastify: FastifyInstance) {
   fastify.post('/api/chat', async (req: FastifyRequest<{ Body: ChatBody }>, reply: FastifyReply) => {
-    const body = req.body as ChatBody;
+  const body = req.body as ChatBody;
+  // Use centralized config for environment variables
+  const ollamaHost = config.ollamaHost;
 
-    // Use configured Ollama host
-    const ollamaHost = config.ollamaHost || 'http://localhost:11434';
-
-    // Get available tools for function calling
-    const tools = getToolDefinitions();
-    
-    // Get proper system prompt for chat mode with location context
-    const systemMessage = getSystemPrompt('chat', body.userLocation);
-    
-    // Validate and clamp temperature/tokens for chat mode
-    const temperature = validateTemperature(body.temperature, 'chat'); // 0.2-0.4 range
-    const maxTokens = validateMaxTokens(body.max_tokens, 'chat'); // 50-1000 range
-    
-    fastify.log.info(`Chat mode request: temp=${temperature}, tokens=${maxTokens}, location=${body.userLocation?.city || 'unknown'}`);
-    
+    // Greeting filter: If user message is a greeting, return welcome message and block tool calls
     // Inject system message at the start if not already present
     const messages = body.messages || [];
     if (messages.length === 0 || messages[0].role !== 'system') {
-      messages.unshift({ role: 'system', content: systemMessage });
+      messages.unshift({ role: 'system', content: getSystemPrompt('chat', body.userLocation) });
     } else {
       // Replace existing system message with our enhanced one
-      messages[0] = { role: 'system', content: systemMessage };
+      messages[0] = { role: 'system', content: getSystemPrompt('chat', body.userLocation) };
     }
-    
+
+    // Greeting filter: Only respond with welcome message for exact greetings in latest user message
+    const userMessages = messages.filter(m => m.role === 'user');
+    const latestUserMessage = userMessages.length > 0 ? userMessages[userMessages.length - 1].content.trim().toLowerCase() : '';
+    const greetings = ['hi', 'hello', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening'];
+    if (latestUserMessage && greetings.some(greet => latestUserMessage === greet)) {
+      return reply.send({
+        success: true,
+        message: {
+          role: 'assistant',
+          content: 'Hello! Welcome to andhru, your personal assistant. How can I help you today?'
+        },
+        toolsUsed: false
+      });
+    }
+
+    // Validate and set temperature and maxTokens (use 'chat' mode)
+    const temperature = validateTemperature(body.temperature ?? 0.3, 'chat');
+    const maxTokens = validateMaxTokens(body.max_tokens ?? 500, 'chat');
+
+    // Get tool definitions for function calling
+    const tools = getToolDefinitions();
+
     // Build payload for Ollama's /api/chat endpoint
-    // Only llama3.2 models support function calling with tools parameter
-    const modelName = body.model || 'llama3.2';
-    const supportsTools = modelName.startsWith('llama3.2');
-    
+    // All models now support tool calling
+    // Set qwen3:0.6b as default/preferred model
+    const modelName = body.model || 'qwen3:0.6b';
     const payload: any = {
       model: modelName,
       messages,
@@ -76,13 +87,12 @@ export async function chatRoutes(fastify: FastifyInstance) {
         num_predict: maxTokens,
       },
     };
-    
-    // Add tools only for models that support them (llama3.2 series)
-    if (supportsTools && !body.stream) {
+    // Always add tools for all models (unless streaming)
+    if (!body.stream) {
       payload.tools = tools;
     }
-    
-    fastify.log.info(`Ollama request: model=${payload.model}, messages=${messages.length}, stream=${payload.stream}, tools=${supportsTools}`);
+
+    fastify.log.info(`Ollama request: model=${payload.model}, messages=${messages.length}, stream=${payload.stream}, tools=${!!payload.tools}`);
 
     try {
       // If streaming requested, proxy the raw response stream
@@ -125,45 +135,86 @@ export async function chatRoutes(fastify: FastifyInstance) {
       let maxIterations = 5; // Prevent infinite loops
       let iteration = 0;
       
+      let totalToolCalls = 0;
+      // Prepare log file path for this model
+      const logDir = path.join(__dirname, '../model-logs');
+      if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
+      const logFile = path.join(logDir, `${modelName.replace(/[^a-zA-Z0-9_-]/g, '_')}.log`);
       while (iteration < maxIterations) {
         iteration++;
-        
-        const res = await fetch(`${ollamaHost}/api/chat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...payload, messages: currentMessages }),
-        });
 
-        if (!res.ok) {
-          const errorText = await res.text();
-          fastify.log.error(`Ollama HTTP error: ${res.status} - ${errorText}`);
-          throw new Error(`Ollama chat error: ${res.status} ${res.statusText}`);
-        }
+          let res, json;
+          try {
+            res = await fetch(`${ollamaHost}/api/chat`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...payload, messages: currentMessages }),
+            });
+          } catch (err) {
+            fastify.log.error('Ollama fetch failed:', err);
+            return reply.status(503).send({ error: 'AI backend is temporarily unavailable. Please try again later.' });
+          }
 
-        const json = await res.json();
-        fastify.log.info(`Ollama response OK, iteration ${iteration}`);
-        const assistantMessage = json.message;
-        
+          if (!res.ok) {
+            const errorText = await res.text();
+            fastify.log.error(`Ollama HTTP error: ${res.status} - ${errorText}`);
+            return reply.status(res.status).send({ error: `AI backend error: ${res.statusText}. Please try again later.` });
+          }
+
+          try {
+            json = await res.json();
+          } catch (err) {
+            fastify.log.error('Ollama response JSON parse failed:', err);
+            return reply.status(502).send({ error: 'AI backend returned invalid response. Please try again.' });
+          }
+          fastify.log.info(`Ollama response OK, iteration ${iteration}`);
+          const assistantMessage = json.message;
+
+          // Force tool usage for web/company/product questions
+          const userQuestion = currentMessages.find(m => m.role === 'user')?.content?.toLowerCase() || '';
+          const webKeywords = ['website', 'company', 'product', 'what is', 'who is', 'tell me about', '.com', '.net', '.org', 'lab', 'guru'];
+          const shouldForceTool = webKeywords.some(k => userQuestion.includes(k));
+          const toolCalls = json.tool_calls || [];
+
+          if (shouldForceTool && toolCalls.length === 0) {
+            // Run searchAndScrape and append result
+            const scrapeResult = await require('../tools/webTools').searchAndScrape(userQuestion);
+            let appended = assistantMessage?.content || '';
+            appended += '\n\n---\nWeb Search & Scrape Result:\n';
+            appended += scrapeResult.extractedText || scrapeResult.pageTitle || scrapeResult.foundUrl || 'No data found.';
+            return reply.send({
+              success: true,
+              message: {
+                role: 'assistant',
+                content: appended
+              },
+              toolsUsed: true,
+              scrapeResult
+            });
+          }
         // Check if AI wants to call a tool
         if (assistantMessage?.tool_calls && assistantMessage.tool_calls.length > 0) {
           // Add assistant message with tool calls to history
           currentMessages.push(assistantMessage);
-          
+
           // Execute all tool calls
           for (const toolCall of assistantMessage.tool_calls) {
+            totalToolCalls++;
             const toolName = toolCall.function.name;
-              let toolArgs;
-              if (typeof toolCall.function.arguments === 'string') {
-                toolArgs = JSON.parse(toolCall.function.arguments);
-              } else {
-                toolArgs = toolCall.function.arguments;
-              }
-            
-            fastify.log.info(`🔧 Executing tool: ${toolName} with args:`, toolArgs);
-            
+            let toolArgs;
+            if (typeof toolCall.function.arguments === 'string') {
+              toolArgs = JSON.parse(toolCall.function.arguments);
+            } else {
+              toolArgs = toolCall.function.arguments;
+            }
+            const callLog = `\n[${new Date().toISOString()}] TOOL CALL: Model: ${modelName}, Tool: ${toolName}, Args: ${JSON.stringify(toolArgs, null, 2)}`;
+            fastify.log.info(callLog);
+            fs.appendFileSync(logFile, callLog);
             // Execute the tool
             const toolResult = await executeTool(toolName, toolArgs);
-            
+            const respLog = `\n[${new Date().toISOString()}] TOOL RESPONSE: Tool: ${toolName}, Result: ${JSON.stringify(toolResult, null, 2)}`;
+            fastify.log.info(respLog);
+            fs.appendFileSync(logFile, respLog);
             // Add tool result to message history
             currentMessages.push({
               role: 'tool' as any,
@@ -171,7 +222,6 @@ export async function chatRoutes(fastify: FastifyInstance) {
               tool_call_id: toolCall.id,
             } as any);
           }
-          
           // Continue the loop to let AI process tool results
           continue;
         }
@@ -179,13 +229,15 @@ export async function chatRoutes(fastify: FastifyInstance) {
         // No more tool calls - return final response
         const responseText = assistantMessage?.content || json.response || '';
         
+        fastify.log.info(`🔧 [TOOL SUMMARY] Model: ${modelName}, Total tool calls: ${totalToolCalls}`);
         return reply.send({ 
           success: true, 
           message: {
             role: 'assistant',
             content: responseText
           },
-          toolsUsed: iteration > 1, // Indicates if tools were called
+          toolsUsed: totalToolCalls > 0, // Indicates if tools were called
+          toolCallCount: totalToolCalls,
           raw: json 
         });
       }

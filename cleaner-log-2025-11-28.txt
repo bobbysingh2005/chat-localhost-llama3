@@ -1,0 +1,52 @@
+🔍 Found: 48 files + 0 folders matching patterns
+
+✔ Moved: C:\projects\llama\pro_chat\archives\bk-Dockerfile.txt → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\archives\bk-Dockerfile.txt
+✔ Moved: C:\projects\llama\pro_chat\archives\frontend\bk-1-App-setting.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\archives\frontend\bk-1-App-setting.jsx
+✔ Moved: C:\projects\llama\pro_chat\archives\frontend\bk-1-auth.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\archives\frontend\bk-1-auth.jsx
+✔ Moved: C:\projects\llama\pro_chat\archives\frontend\bk-1-generate-stream.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\archives\frontend\bk-1-generate-stream.jsx
+✔ Moved: C:\projects\llama\pro_chat\archives\frontend\bk-1-generate.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\archives\frontend\bk-1-generate.jsx
+✔ Moved: C:\projects\llama\pro_chat\archives\frontend\src\bk-1-chat-app.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\archives\frontend\src\bk-1-chat-app.jsx
+✔ Moved: C:\projects\llama\pro_chat\archives\frontend\src\bk-1-generate.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\archives\frontend\src\bk-1-generate.jsx
+✔ Moved: C:\projects\llama\pro_chat\archives\frontend\src\bk-2-chat-app.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\archives\frontend\src\bk-2-chat-app.jsx
+✔ Moved: C:\projects\llama\pro_chat\archives\frontend\src\bk-2-generate.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\archives\frontend\src\bk-2-generate.jsx
+✔ Moved: C:\projects\llama\pro_chat\archives\frontend\src\views\bk-1-App-setting.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\archives\frontend\src\views\bk-1-App-setting.jsx
+✔ Moved: C:\projects\llama\pro_chat\archives\frontend\src\views\bk-1-auth.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\archives\frontend\src\views\bk-1-auth.jsx
+✔ Moved: C:\projects\llama\pro_chat\archives\frontend\src\views\bk-1-generate-stream.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\archives\frontend\src\views\bk-1-generate-stream.jsx
+✔ Moved: C:\projects\llama\pro_chat\archives\frontend\src\views\bk-1-generate.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\archives\frontend\src\views\bk-1-generate.jsx
+✔ Moved: C:\projects\llama\pro_chat\archives\frontend\src\views\bk-2-chat-app.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\archives\frontend\src\views\bk-2-chat-app.jsx
+✔ Moved: C:\projects\llama\pro_chat\archives\frontend\src\views\bk-2-generate.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\archives\frontend\src\views\bk-2-generate.jsx
+✔ Moved: C:\projects\llama\pro_chat\backend\dist\bk-1-index.js → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\backend\dist\bk-1-index.js
+✔ Moved: C:\projects\llama\pro_chat\backend\dist\routes\bk-1-auth.js → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\backend\dist\routes\bk-1-auth.js
+✔ Moved: C:\projects\llama\pro_chat\backend\dist\routes\bk-auth.js → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\backend\dist\routes\bk-auth.js
+✔ Moved: C:\projects\llama\pro_chat\backend\node_modules\mnemonist\bk-tree.d.ts → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\backend\node_modules\mnemonist\bk-tree.d.ts
+✔ Moved: C:\projects\llama\pro_chat\backend\node_modules\mnemonist\bk-tree.js → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\backend\node_modules\mnemonist\bk-tree.js
+✔ Moved: C:\projects\llama\pro_chat\backend\src\bk-1-index.ts → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\backend\src\bk-1-index.ts
+✔ Moved: C:\projects\llama\pro_chat\backend\src\routes\bk-1-auth.ts → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\backend\src\routes\bk-1-auth.ts
+✔ Moved: C:\projects\llama\pro_chat\backend\src\routes\bk-auth.ts → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\backend\src\routes\bk-auth.ts
+✔ Moved: C:\projects\llama\pro_chat\bk-1-docker-compose.yml → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\bk-1-docker-compose.yml
+✔ Moved: C:\projects\llama\pro_chat\bk-22-docker-compose.yml → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\bk-22-docker-compose.yml
+✔ Moved: C:\projects\llama\pro_chat\bk-DEVELOPER_GUIDE.md → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\bk-DEVELOPER_GUIDE.md
+✔ Moved: C:\projects\llama\pro_chat\bk-README.md → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\bk-README.md
+✔ Moved: C:\projects\llama\pro_chat\bk-USER_GUIDE.md → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\bk-USER_GUIDE.md
+✔ Moved: C:\projects\llama\pro_chat\frontend\archive\bk-1-chat-app.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\frontend\archive\bk-1-chat-app.jsx
+✔ Moved: C:\projects\llama\pro_chat\frontend\archive\bk-1-generate.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\frontend\archive\bk-1-generate.jsx
+✔ Moved: C:\projects\llama\pro_chat\frontend\archive\bk-2-chat-app.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\frontend\archive\bk-2-chat-app.jsx
+✔ Moved: C:\projects\llama\pro_chat\frontend\archive\bk-2-generate.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\frontend\archive\bk-2-generate.jsx
+✔ Moved: C:\projects\llama\pro_chat\frontend\archives\src\bk-1-chat-app.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\frontend\archives\src\bk-1-chat-app.jsx
+✔ Moved: C:\projects\llama\pro_chat\frontend\archives\src\bk-1-generate.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\frontend\archives\src\bk-1-generate.jsx
+✔ Moved: C:\projects\llama\pro_chat\frontend\archives\src\bk-2-chat-app.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\frontend\archives\src\bk-2-chat-app.jsx
+✔ Moved: C:\projects\llama\pro_chat\frontend\archives\src\bk-2-generate.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\frontend\archives\src\bk-2-generate.jsx
+✔ Moved: C:\projects\llama\pro_chat\frontend\archives\src\views\bk-1-App-setting.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\frontend\archives\src\views\bk-1-App-setting.jsx
+✔ Moved: C:\projects\llama\pro_chat\frontend\archives\src\views\bk-1-auth.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\frontend\archives\src\views\bk-1-auth.jsx
+✔ Moved: C:\projects\llama\pro_chat\frontend\archives\src\views\bk-1-generate-stream.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\frontend\archives\src\views\bk-1-generate-stream.jsx
+✔ Moved: C:\projects\llama\pro_chat\frontend\archives\src\views\bk-1-generate.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\frontend\archives\src\views\bk-1-generate.jsx
+✔ Moved: C:\projects\llama\pro_chat\frontend\archives\src\views\bk-2-chat-app.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\frontend\archives\src\views\bk-2-chat-app.jsx
+✔ Moved: C:\projects\llama\pro_chat\frontend\archives\src\views\bk-2-generate.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\frontend\archives\src\views\bk-2-generate.jsx
+✔ Moved: C:\projects\llama\pro_chat\frontend\bk-Dockerfile.txt → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\frontend\bk-Dockerfile.txt
+✔ Moved: C:\projects\llama\pro_chat\liveChat\archive\bk-1-chat-app.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\liveChat\archive\bk-1-chat-app.jsx
+✔ Moved: C:\projects\llama\pro_chat\liveChat\archive\bk-1-generate.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\liveChat\archive\bk-1-generate.jsx
+✔ Moved: C:\projects\llama\pro_chat\liveChat\archive\bk-2-chat-app.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\liveChat\archive\bk-2-chat-app.jsx
+✔ Moved: C:\projects\llama\pro_chat\liveChat\archive\bk-2-generate.jsx → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\liveChat\archive\bk-2-generate.jsx
+✔ Moved: C:\projects\llama\pro_chat\nginx\bk-nginx.conf → C:\projects\llama\pro_chat\cleanerArchive\2025-11-28\nginx\bk-nginx.conf
+
+✨ Done.

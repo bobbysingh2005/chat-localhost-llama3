@@ -740,9 +740,22 @@ const ChatApp = () => {
           </button>
                 {/* Removed misplaced TTSButton. It is rendered per message below. */}
         </form>
-        {loading && <Loader />}
+        {/* Accessible spinner and live announcement for AI processing */}
+        {loading && (
+          <div
+            role="status"
+            aria-live="assertive"
+            aria-atomic="true"
+            style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '1rem 0' }}
+          >
+            <span id="ai-processing-announcement" style={{ fontWeight: 700, color: '#1976d2' }}>
+              Andhru AI is working. Please wait while your personal assistant processes your request...
+            </span>
+            <Loader />
+          </div>
+        )}
         {responseTime && (
-          <div className="response-time">Response time: {responseTime} ms</div>
+          <div className="response-time" aria-live="polite">Response time: {responseTime} ms. AI response is ready.</div>
         )}
       </div>
     </div>

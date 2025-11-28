@@ -1,0 +1,71 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Test /api/search endpoint",
+			"type": "shell",
+			"command": "curl -s \"http://localhost:3300/api/search?q=tsquaredlab\"",
+			"group": "test"
+		},
+		{
+			"label": "Test /api/scrape endpoint",
+			"type": "shell",
+			"command": "curl -s \"http://localhost:3300/api/scrape?url=https://tsquaredlab.com\"",
+			"group": "test"
+		},
+		{
+			"label": "Test /api/search-and-scrape endpoint",
+			"type": "shell",
+			"command": "curl -s \"http://localhost:3300/api/search-and-scrape?q=tsquaredlab\"",
+			"group": "test"
+		},
+		{
+			"label": "Test /api/search endpoint",
+			"type": "shell",
+			"command": "curl -s \"http://localhost:3300/api/search?q=tsquaredlab\"",
+			"group": "test"
+		},
+		{
+			"label": "Test /api/scrape endpoint",
+			"type": "shell",
+			"command": "curl -s \"http://localhost:3300/api/scrape?url=https://tsquaredlab.com\"",
+			"group": "test"
+		},
+		{
+			"label": "Test /api/search-and-scrape endpoint",
+			"type": "shell",
+			"command": "curl -s \"http://localhost:3300/api/search-and-scrape?q=tsquaredlab\"",
+			"group": "test"
+		},
+		{
+			"label": "Test /api/scrape endpoint with google.com",
+			"type": "shell",
+			"command": "curl -s \"http://localhost:3300/api/scrape?url=https://google.com\"",
+			"group": "test"
+		},
+		{
+			"label": "Test /api/search-and-scrape endpoint with google.com",
+			"type": "shell",
+			"command": "curl -s \"http://localhost:3300/api/search-and-scrape?q=google.com\"",
+			"group": "test"
+		},
+		{
+			"label": "Test /api/scrape endpoint with amazon.com",
+			"type": "shell",
+			"command": "curl -s \"http://localhost:3300/api/scrape?url=https://amazon.com\"",
+			"group": "test"
+		},
+		{
+			"label": "Test /api/search-and-scrape endpoint with amazon.com",
+			"type": "shell",
+			"command": "curl -s \"http://localhost:3300/api/search-and-scrape?q=amazon.com\"",
+			"group": "test"
+		},
+		{
+			"label": "Test /api/chat with amazon.com question",
+			"type": "shell",
+			"command": "curl -s -X POST \"http://localhost:3300/api/chat\" -H \"Content-Type: application/json\" -d \"{\\\"messages\\\":[{\\\"role\\\":\\\"user\\\",\\\"content\\\":\\\"Tell me about amazon.com\\\"}]}\"",
+			"group": "test"
+		}
+	]
+}
