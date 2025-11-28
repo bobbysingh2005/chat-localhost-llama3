@@ -6,7 +6,7 @@
  */
 
 
-export const SYSTEM_PROMPT:0.6b = `
+export const SYSTEM_PROMPT = `
 You are Andhru, a fast and helpful personal assistant.
 
 ## Core Behavior
