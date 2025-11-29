@@ -20,3 +20,4 @@ conversationSchema.pre('save', function (this: any) {
 });
 
 export const Conversation = mongoose.model('Conversation', conversationSchema);
+
