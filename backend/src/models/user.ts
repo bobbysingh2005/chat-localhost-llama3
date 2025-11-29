@@ -34,3 +34,4 @@ export async function ensureAdminUser() {
 
 export default User;
 
+//test
